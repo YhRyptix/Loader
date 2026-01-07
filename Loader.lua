@@ -93,7 +93,9 @@ katsuraMs.Parent = KatsuraFolder
 local katsuraGui = Instance.new("ScreenGui")
 katsuraGui.Name = "Katsura"
 katsuraGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-katsuraGui.Parent = katsuraMs
+katsuraGui.ResetOnSpawn = false
+katsuraGui.IgnoreGuiInset = true
+katsuraGui.Parent = game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui")
 
 local main = Instance.new("Frame")
 main.Name = "Main"
@@ -224,7 +226,9 @@ main.Parent = katsuraGui
 local katsuraLoading = Instance.new("ScreenGui")
 katsuraLoading.Name = "KatsuraLoading"
 katsuraLoading.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-katsuraLoading.Parent = katsuraMs
+katsuraLoading.ResetOnSpawn = false
+katsuraLoading.IgnoreGuiInset = true
+katsuraLoading.Parent = game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui")
 
 local loadingWindow = Instance.new("Frame")
 loadingWindow.Name = "LoadingWindow"
