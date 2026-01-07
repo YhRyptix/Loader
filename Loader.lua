@@ -740,18 +740,14 @@ function Katsura.MakeDraggable(guiObject)
     if not guiObject or not guiObject:IsA("GuiObject") then return end
 
     local dragging = false
-    local dragStart = nil
-    local startAnchorPos = nil
-    local screenSize = workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize or Vector2.new(1920, 1080)
+    local startMousePos = nil
+    local startGuiPos = nil
 
     guiObject.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 then
             dragging = true
-            dragStart = UserInputService:GetMouseLocation()
-            startAnchorPos = Vector2.new(
-                guiObject.Position.Scale.X * screenSize.X + guiObject.Position.Offset.X,
-                guiObject.Position.Scale.Y * screenSize.Y + guiObject.Position.Offset.Y
-            )
+            startMousePos = UserInputService:GetMouseLocation()
+            startGuiPos = guiObject.AbsolutePosition
 
             input.Changed:Connect(function()
                 if input.UserInputState == Enum.UserInputState.End then
@@ -762,31 +758,26 @@ function Katsura.MakeDraggable(guiObject)
     end)
 
     RunService.RenderStepped:Connect(function()
-        if dragging then
-            local mousePos = UserInputService:GetMouseLocation()
-            local delta = mousePos - dragStart
-            local newAnchorPos = startAnchorPos + delta
+        if not dragging then return end
 
-            local size = guiObject.AbsoluteSize
-            local anchor = guiObject.AnchorPoint
+        local mousePos = UserInputService:GetMouseLocation()
+        local delta = mousePos - startMousePos
+        local newTopLeft = startGuiPos + delta
 
-            local clampedX = math.clamp(
-                newAnchorPos.X,
-                size.X * anchor.X,
-                screenSize.X - size.X * (1 - anchor.X)
-            )
+        local camera = workspace.CurrentCamera
+        local screenSize = camera and camera.ViewportSize or Vector2.new(1920, 1080)
+        local size = guiObject.AbsoluteSize
+        local anchor = guiObject.AnchorPoint
 
-            local clampedY = math.clamp(
-                newAnchorPos.Y,
-                size.Y * anchor.Y,
-                screenSize.Y - size.Y * (1 - anchor.Y)
-            )
+        -- Clamp top-left so the GUI stays onscreen
+        newTopLeft = Vector2.new(
+            math.clamp(newTopLeft.X, 0, math.max(0, screenSize.X - size.X)),
+            math.clamp(newTopLeft.Y, 0, math.max(0, screenSize.Y - size.Y))
+        )
 
-            local newScaleX = clampedX / screenSize.X
-            local newScaleY = clampedY / screenSize.Y
-
-            guiObject.Position = UDim2.new(newScaleX, 0, newScaleY, 0)
-        end
+        -- Position property expects the anchored position, so add anchor*size
+        local positionAbsolute = newTopLeft + Vector2.new(anchor.X * size.X, anchor.Y * size.Y)
+        guiObject.Position = UDim2.fromOffset(math.floor(positionAbsolute.X + 0.5), math.floor(positionAbsolute.Y + 0.5))
     end)
 end
 return Katsura,LoaderHandler.Katsura, LoaderHandler.GameFrame
