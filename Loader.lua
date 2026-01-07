@@ -328,7 +328,7 @@ loadingLine.Parent = backgroundLoadBar
 
 backgroundLoadBar.Parent = topLabels
 
-topLabels.Parent = loadingWindow
+topLabels.Parent = LoadingWindow
 
 local kapaLogo = Instance.new("ImageLabel")
 kapaLogo.Name = "KatsuraLogo"
@@ -341,9 +341,9 @@ kapaLogo.BorderColor3 = Color3.fromRGB(0, 0, 0)
 kapaLogo.BorderSizePixel = 0
 kapaLogo.Position = UDim2.fromScale(0.265, 0.338)
 kapaLogo.Size = UDim2.fromOffset(69, 56)
-kapaLogo.Parent = loadingWindow
+kapaLogo.Parent = LoadingWindow
 
--- loadingWindow is now parented to loadingContainer above
+-- LoadingWindow is now parented to loadingContainer above
 
 
 local gameFrame = Instance.new("Frame")
