@@ -77,10 +77,42 @@ getgenv().KatsuraUIConfig = {
         Stroke = Color3.fromRGB(40, 40, 45),          -- outlines, borders
         IconTint = Color3.fromRGB(200, 50, 60)        -- logos, image tints
     },
-    Logos = {
-        KatsuraLogo = "rbxassetid://137737556913730",
-        KatsuraLoadingLogo = "rbxassetid://137737556913730",
-    },
+    Logos = (function()
+        local rawUrl = "https://raw.githubusercontent.com/YhRyptix/Loader/main/d75af5bf-c12e-4753-9e85-76d367444a83.png"
+        local imagePath = "katsura_logo.png"
+        local fallback = "rbxassetid://137737556913730"
+
+        local asset = fallback
+
+        local ok_write = false
+        if type(isfile) == "function" and type(writefile) == "function" and type(game.HttpGet) == "function" then
+            if not isfile(imagePath) then
+                local ok, data = pcall(function()
+                    return game:HttpGet(rawUrl)
+                end)
+                if ok and data and #data > 0 then
+                    pcall(function() writefile(imagePath, data) end)
+                    ok_write = true
+                end
+            else
+                ok_write = true
+            end
+
+            if ok_write and type(getcustomasset) == "function" then
+                local ok2, res = pcall(function()
+                    return getcustomasset(imagePath)
+                end)
+                if ok2 and res then
+                    asset = res
+                end
+            end
+        end
+
+        return {
+            KatsuraLogo = asset,
+            KatsuraLoadingLogo = asset,
+        }
+    end)(),
 }
 local KatsuraFolder = Instance.new("Folder")
 KatsuraFolder.Name = "KatsuraFolder"
@@ -304,28 +336,11 @@ loadingLine.Parent = backgroundLoadBar
 
 backgroundLoadBar.Parent = topLabels
 
-kapaLogo.Name = "KatsuraLogo"
+topLabels.Parent = loadingWindow
+
 local kapaLogo = Instance.new("ImageLabel")
--- Attempt to download the logo once and use a local copy via getcustomasset when available.
-local imageUrl = "https://raw.githubusercontent.com/YhRyptix/Loader/main/d75af5bf-c12e-4753-9e85-76d367444a83.png"
-local imagePath = "katsura.png"
-local logoAsset = KatsuraUIConfig.Logos.KatsuraLogo
-
-if type(isfile) == "function" and type(getcustomasset) == "function" then
-    if not isfile(imagePath) and type(writefile) == "function" then
-        local ok, data = pcall(function() return game:HttpGet(imageUrl) end)
-        if ok and type(data) == "string" then
-            pcall(writefile, imagePath, data)
-        end
-    end
-
-    local ok2, asset = pcall(getcustomasset, imagePath)
-    if ok2 and asset then
-        logoAsset = asset
-    end
-end
-
-kapaLogo.Image = logoAsset
+kapaLogo.Name = "KatsuraLogo"
+kapaLogo.Image = KatsuraUIConfig.Logos.KatsuraLogo
 kapaLogo.ResampleMode = Enum.ResamplerMode.Pixelated
 kapaLogo.ScaleType = Enum.ScaleType.Fit
 kapaLogo.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
