@@ -781,7 +781,10 @@ function Katsura.MakeDraggable(guiObject)
                 screenSize.Y - (size.Y * (1 - anchor.Y))
             )
 
-            guiObject.Position = UDim2.fromOffset(clampedX, clampedY)
+            local newCenterX = clampedX + size.X * anchor.X
+            local newCenterY = clampedY + size.Y * anchor.Y
+
+            guiObject.Position = UDim2.fromOffset(newCenterX, newCenterY)
         end
     end)
 end
