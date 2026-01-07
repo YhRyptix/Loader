@@ -339,17 +339,18 @@ backgroundLoadBar.Parent = topLabels
 topLabels.Parent = loadingWindow
 
 local kapaLogo = Instance.new("ImageLabel")
-kapaLogo.Name = "KatsuraLogo"
-kapaLogo.Image = KatsuraUIConfig.Logos.KatsuraLogo
-kapaLogo.ResampleMode = Enum.ResamplerMode.Pixelated
-kapaLogo.ScaleType = Enum.ScaleType.Fit
-kapaLogo.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-kapaLogo.BackgroundTransparency = 1
-kapaLogo.BorderColor3 = Color3.fromRGB(0, 0, 0)
-kapaLogo.BorderSizePixel = 0
-kapaLogo.Position = UDim2.fromScale(0.265, 0.338)
-kapaLogo.Size = UDim2.fromOffset(110, 90) -------Logo Size Ryptix
-kapaLogo.Parent = loadingWindow
+    kapaLogo.Name = "KatsuraLogo"
+    kapaLogo.Image = KatsuraUIConfig.Logos.KatsuraLogo
+    kapaLogo.ResampleMode = Enum.ResamplerMode.Pixelated
+    kapaLogo.ScaleType = Enum.ScaleType.Fit
+    kapaLogo.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    kapaLogo.BackgroundTransparency = 1
+    kapaLogo.BorderColor3 = Color3.fromRGB(0, 0, 0)
+    kapaLogo.BorderSizePixel = 0
+    kapaLogo.AnchorPoint = Vector2.new(0.5, 0.5)
+    kapaLogo.Position = UDim2.fromScale(0.5, 0.5)
+    kapaLogo.Size = UDim2.fromOffset(120, 100)
+    kapaLogo.Parent = loadingWindow
 
 loadingWindow.Parent = katsuraLoading
 
@@ -364,17 +365,18 @@ gameFrame.ClipsDescendants = true
 gameFrame.Size = UDim2.fromOffset(344, 49)
 
 local imageLabel = Instance.new("ImageLabel")
-imageLabel.Name = "ImageLabel"
-imageLabel.Image = "rbxassetid://108227353249963"
-imageLabel.ImageColor3 = Color3.fromRGB(255, 254, 253)
-imageLabel.ImageTransparency = 0.6
-imageLabel.ScaleType = Enum.ScaleType.Fit
-imageLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-imageLabel.BackgroundTransparency = 1
-imageLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
-imageLabel.BorderSizePixel = 0
-imageLabel.Position = UDim2.fromScale(0.0208, 0.0612)
-imageLabel.Size = UDim2.fromOffset(37, 42)
+
+    imageLabel.Name = "ImageLabel"
+    imageLabel.Image = "rbxassetid://108227353249963"
+    imageLabel.ImageColor3 = Color3.fromRGB(255, 254, 253)
+    imageLabel.ImageTransparency = 0.6
+    imageLabel.ScaleType = Enum.ScaleType.Fit
+    imageLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    imageLabel.BackgroundTransparency = 1
+    imageLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
+    imageLabel.BorderSizePixel = 0
+    imageLabel.Position = UDim2.fromScale(0.0208, 0.06)
+    imageLabel.Size = UDim2.fromOffset(56, 64)
 
 local uICorner = Instance.new("UICorner")
 uICorner.Name = "UICorner"
