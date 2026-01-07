@@ -249,15 +249,15 @@ loadingContainer.Position = UDim2.fromScale(0, 0)
 loadingContainer.AnchorPoint = Vector2.new(0, 0)
 loadingContainer.Parent = katsuraLoading
 
-local loadingWindow = Instance.new("Frame")
-loadingWindow.Name = "LoadingWindow"
-loadingWindow.BackgroundColor3 = KatsuraUIConfig.Theme.PrimaryBG
-loadingWindow.BorderColor3 = Color3.fromRGB(0, 0, 0)
-loadingWindow.BorderSizePixel = 0
-loadingWindow.AnchorPoint = Vector2.new(0.5, 0.5)
-loadingWindow.Position = UDim2.fromScale(0.5, 0.5)
-loadingWindow.Size = UDim2.fromOffset(148, 133)
-loadingWindow.Parent = loadingContainer
+local LoadingWindow = Instance.new("Frame")
+LoadingWindow.Name = "LoadingWindow"
+LoadingWindow.BackgroundColor3 = KatsuraUIConfig.Theme.PrimaryBG
+LoadingWindow.BorderColor3 = Color3.fromRGB(0, 0, 0)
+LoadingWindow.BorderSizePixel = 0
+LoadingWindow.AnchorPoint = Vector2.new(0.5, 0.5)
+LoadingWindow.Position = UDim2.fromScale(0.5, 0.5)
+LoadingWindow.Size = UDim2.fromOffset(148, 133)
+LoadingWindow.Parent = loadingContainer
 
 local topLabels = Instance.new("Frame")
 topLabels.Name = "TopLabels"
@@ -627,15 +627,8 @@ function Katsura.LoadingEffect(duration, player, frameConfigs, mainTemplate, gam
     clonedLoadingUI.Parent = player:WaitForChild("PlayerGui")
     clonedLoadingUI.Enabled = true
 
-
-    -- Find LoadingWindow inside the container
-    local loadingWindow = clonedLoadingUI:FindFirstChild("LoadingContainer") and clonedLoadingUI.LoadingContainer:FindFirstChild("LoadingWindow")
-    if not loadingWindow then
-        warn("LoadingWindow not found in LoadingContainer")
-        return
-    end
-    local backgroundFrame = loadingWindow.TopLabels:FindFirstChild("BackgroundLoadBar")
-    Katsura.MakeDraggable(loadingWindow)
+    local backgroundFrame = clonedLoadingUI.LoadingWindow.TopLabels:FindFirstChild("BackgroundLoadBar")
+        Katsura.MakeDraggable(clonedLoadingUI.LoadingWindow)
 
     local loadingLine = backgroundFrame and backgroundFrame:FindFirstChild("LoadingLine")
     if not backgroundFrame or not loadingLine then return end
