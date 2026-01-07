@@ -79,7 +79,7 @@ getgenv().KatsuraUIConfig = {
     },
     Logos = (function()
         local rawUrl = "https://raw.githubusercontent.com/YhRyptix/Loader/main/d75af5bf-c12e-4753-9e85-76d367444a83.png"
-        local imagePath = "katsura_logo.png"
+        local imagePath = "katsuralogo.png"
         local fallback = "rbxassetid://137737556913730"
 
         local asset = fallback
