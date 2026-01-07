@@ -741,13 +741,17 @@ function Katsura.MakeDraggable(guiObject)
 
     local dragging = false
     local dragStart = nil
-    local startPos = nil
+    local startAnchorPos = nil
+    local screenSize = workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize or Vector2.new(1920, 1080)
 
     guiObject.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 then
             dragging = true
             dragStart = UserInputService:GetMouseLocation()
-            startPos = guiObject.AbsolutePosition
+            startAnchorPos = Vector2.new(
+                guiObject.Position.Scale.X * screenSize.X + guiObject.Position.Offset.X,
+                guiObject.Position.Scale.Y * screenSize.Y + guiObject.Position.Offset.Y
+            )
 
             input.Changed:Connect(function()
                 if input.UserInputState == Enum.UserInputState.End then
@@ -761,30 +765,27 @@ function Katsura.MakeDraggable(guiObject)
         if dragging then
             local mousePos = UserInputService:GetMouseLocation()
             local delta = mousePos - dragStart
-            local newAbsPos = startPos + delta
-
-            local camera = workspace.CurrentCamera
-            local screenSize = camera and camera.ViewportSize or Vector2.new(1920, 1080)
+            local newAnchorPos = startAnchorPos + delta
 
             local size = guiObject.AbsoluteSize
             local anchor = guiObject.AnchorPoint
 
             local clampedX = math.clamp(
-                newAbsPos.X,
-                0 - (size.X * anchor.X),
-                screenSize.X - (size.X * (1 - anchor.X))
+                newAnchorPos.X,
+                size.X * anchor.X,
+                screenSize.X - size.X * (1 - anchor.X)
             )
 
             local clampedY = math.clamp(
-                newAbsPos.Y,
-                0 - (size.Y * anchor.Y),
-                screenSize.Y - (size.Y * (1 - anchor.Y))
+                newAnchorPos.Y,
+                size.Y * anchor.Y,
+                screenSize.Y - size.Y * (1 - anchor.Y)
             )
 
-            local newCenterX = clampedX + size.X * anchor.X
-            local newCenterY = clampedY + size.Y * anchor.Y
+            local newScaleX = clampedX / screenSize.X
+            local newScaleY = clampedY / screenSize.Y
 
-            guiObject.Position = UDim2.fromOffset(newCenterX, newCenterY)
+            guiObject.Position = UDim2.new(newScaleX, 0, newScaleY, 0)
         end
     end)
 end
