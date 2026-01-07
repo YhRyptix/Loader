@@ -80,7 +80,7 @@ getgenv().KatsuraUIConfig = {
     Logos = (function()
         local rawUrl = "https://raw.githubusercontent.com/YhRyptix/Loader/main/d75af5bf-c12e-4753-9e85-76d367444a83.png"
         local imagePath = "katsuralogo.png"
-        local fallback = "rbxassetid://137737556913730"
+        local fallback = "rbxassetid://0"
 
         local asset = fallback
 
@@ -348,7 +348,7 @@ kapaLogo.BackgroundTransparency = 1
 kapaLogo.BorderColor3 = Color3.fromRGB(0, 0, 0)
 kapaLogo.BorderSizePixel = 0
 kapaLogo.Position = UDim2.fromScale(0.265, 0.338)
-kapaLogo.Size = UDim2.fromOffset(69, 56)
+kapaLogo.Size = UDim2.fromOffset(110, 90) -------Logo Size Ryptix
 kapaLogo.Parent = loadingWindow
 
 loadingWindow.Parent = katsuraLoading
