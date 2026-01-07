@@ -265,7 +265,7 @@ loadingWindow.BorderColor3 = Color3.fromRGB(0, 0, 0)
 loadingWindow.BorderSizePixel = 0
 loadingWindow.AnchorPoint = Vector2.new(0.5, 0.5)
 loadingWindow.Position = UDim2.fromScale(0.5, 0.5)
-loadingWindow.Size = UDim2.fromOffset(296, 266)
+loadingWindow.Size = UDim2.fromScale(0.45, 0.42)
 
 local topLabels = Instance.new("Frame")
     topLabels.Name = "TopLabels"
@@ -273,7 +273,7 @@ local topLabels = Instance.new("Frame")
     topLabels.BorderColor3 = Color3.fromRGB(0, 0, 0)
     topLabels.BorderSizePixel = 0
     topLabels.Position = UDim2.fromScale(0, 0.015)
-    topLabels.Size = UDim2.fromOffset(296, 54)
+    topLabels.Size = UDim2.fromScale(0.45, 0.203) -- relative to loadingWindow
 
 local textLabel = Instance.new("TextLabel")
     textLabel.Name = "TextLabel"
@@ -286,8 +286,8 @@ local textLabel = Instance.new("TextLabel")
     textLabel.BackgroundTransparency = 1
     textLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
     textLabel.BorderSizePixel = 0
-    textLabel.Position = UDim2.fromScale(0.0559, 0)
-    textLabel.Size = UDim2.fromOffset(158, 54)
+    textLabel.Position = UDim2.fromScale(0.06, 0)
+    textLabel.Size = UDim2.fromScale(0.53, 1)
 textLabel.Parent = topLabels
 
 local close = Instance.new("ImageLabel")
@@ -299,7 +299,7 @@ local close = Instance.new("ImageLabel")
     close.BackgroundColor3 = Color3.fromRGB(74, 74, 75)
     close.BackgroundTransparency = 1
     close.Position = UDim2.fromScale(0.845, 0.222)
-    close.Size = UDim2.fromOffset(30, 48)
+    close.Size = UDim2.fromScale(0.102, 0.888)
 
 local uIAspectRatioConstraint = Instance.new("UIAspectRatioConstraint")
 uIAspectRatioConstraint.Name = "UIAspectRatioConstraint"
@@ -314,7 +314,7 @@ local purpleLine = Instance.new("Frame")
     purpleLine.BorderColor3 = Color3.fromRGB(0, 0, 0)
     purpleLine.BorderSizePixel = 0
     purpleLine.Position = UDim2.fromScale(0, 0.924)
-    purpleLine.Size = UDim2.fromOffset(296, 4)
+    purpleLine.Size = UDim2.fromScale(1, 0.074)
 purpleLine.Parent = topLabels
 
 local backgroundLoadBar = Instance.new("Frame")
@@ -322,8 +322,8 @@ local backgroundLoadBar = Instance.new("Frame")
     backgroundLoadBar.BackgroundColor3 = KatsuraUIConfig.Theme.SecondaryBG
     backgroundLoadBar.BorderColor3 = Color3.fromRGB(0, 0, 0)
     backgroundLoadBar.BorderSizePixel = 0
-    backgroundLoadBar.Position = UDim2.fromScale(0.142, 4.11)
-    backgroundLoadBar.Size = UDim2.fromOffset(224, 6)
+    backgroundLoadBar.Position = UDim2.fromScale(0.142, 0.155)
+    backgroundLoadBar.Size = UDim2.fromScale(0.76, 0.045)
 
 local loadingLine = Instance.new("Frame")
     loadingLine.Name = "LoadingLine"
@@ -331,7 +331,7 @@ local loadingLine = Instance.new("Frame")
     loadingLine.BorderColor3 = Color3.fromRGB(0, 0, 0)
     loadingLine.BorderSizePixel = 0
     loadingLine.Position = UDim2.fromScale(-0.00306, 0)
-    loadingLine.Size = UDim2.fromOffset(14, 6)
+    loadingLine.Size = UDim2.fromScale(0.0625, 1)
     loadingLine.Parent = backgroundLoadBar
 
 backgroundLoadBar.Parent = topLabels
@@ -348,8 +348,8 @@ local kapaLogo = Instance.new("ImageLabel")
     kapaLogo.BorderColor3 = Color3.fromRGB(0, 0, 0)
     kapaLogo.BorderSizePixel = 0
     kapaLogo.AnchorPoint = Vector2.new(0.5, 0.5)
-    kapaLogo.Position = UDim2.fromScale(0.5, 0.5)
-    kapaLogo.Size = UDim2.fromOffset(240, 200)
+    kapaLogo.Position = UDim2.fromScale(0.5, 0.6)
+    kapaLogo.Size = UDim2.fromScale(0.72, 0.7)
     kapaLogo.Parent = loadingWindow
 
 loadingWindow.Parent = katsuraLoading
