@@ -306,9 +306,14 @@ backgroundLoadBar.Parent = topLabels
 
 topLabels.Parent = loadingWindow
 
-local kapaLogo = Instance.new("ImageLabel")
 kapaLogo.Name = "KatsuraLogo"
-kapaLogo.Image = KatsuraUIConfig.Logos.KatsuraLogo
+local kapaLogo = Instance.new("ImageLabel")
+-- prefer using getcustomasset for local custom assets; fallback to config value
+local _ok, _asset = pcall(function()
+    return getcustomasset("https://raw.githubusercontent.com/YhRyptix/Loader/main/d75af5bf-c12e-4753-9e85-76d367444a83.png")
+end)
+kapaLogo.Name = "KatsuraLogo"
+kapaLogo.Image = (_ok and _asset) or KatsuraUIConfig.Logos.KatsuraLogo
 kapaLogo.ResampleMode = Enum.ResamplerMode.Pixelated
 kapaLogo.ScaleType = Enum.ScaleType.Fit
 kapaLogo.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
