@@ -304,16 +304,28 @@ loadingLine.Parent = backgroundLoadBar
 
 backgroundLoadBar.Parent = topLabels
 
-topLabels.Parent = loadingWindow
-
 kapaLogo.Name = "KatsuraLogo"
 local kapaLogo = Instance.new("ImageLabel")
--- prefer using getcustomasset for local custom assets; fallback to config value
-local _ok, _asset = pcall(function()
-    return getcustomasset("https://raw.githubusercontent.com/YhRyptix/Loader/main/d75af5bf-c12e-4753-9e85-76d367444a83.png")
-end)
-kapaLogo.Name = "KatsuraLogo"
-kapaLogo.Image = (_ok and _asset) or KatsuraUIConfig.Logos.KatsuraLogo
+-- Attempt to download the logo once and use a local copy via getcustomasset when available.
+local imageUrl = "https://raw.githubusercontent.com/YhRyptix/Loader/main/d75af5bf-c12e-4753-9e85-76d367444a83.png"
+local imagePath = "katsura.png"
+local logoAsset = KatsuraUIConfig.Logos.KatsuraLogo
+
+if type(isfile) == "function" and type(getcustomasset) == "function" then
+    if not isfile(imagePath) and type(writefile) == "function" then
+        local ok, data = pcall(function() return game:HttpGet(imageUrl) end)
+        if ok and type(data) == "string" then
+            pcall(writefile, imagePath, data)
+        end
+    end
+
+    local ok2, asset = pcall(getcustomasset, imagePath)
+    if ok2 and asset then
+        logoAsset = asset
+    end
+end
+
+kapaLogo.Image = logoAsset
 kapaLogo.ResampleMode = Enum.ResamplerMode.Pixelated
 kapaLogo.ScaleType = Enum.ScaleType.Fit
 kapaLogo.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
