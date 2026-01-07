@@ -93,18 +93,7 @@ katsuraMs.Parent = KatsuraFolder
 local katsuraGui = Instance.new("ScreenGui")
 katsuraGui.Name = "Katsura"
 katsuraGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-katsuraGui.ResetOnSpawn = false
-katsuraGui.IgnoreGuiInset = true
-katsuraGui.Parent = game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui")
-
--- Create a full-screen invisible container for centering
-local mainContainer = Instance.new("Frame")
-mainContainer.Name = "MainContainer"
-mainContainer.BackgroundTransparency = 1
-mainContainer.Size = UDim2.fromScale(1, 1)
-mainContainer.Position = UDim2.fromScale(0, 0)
-mainContainer.AnchorPoint = Vector2.new(0, 0)
-mainContainer.Parent = katsuraGui
+katsuraGui.Parent = katsuraMs
 
 local main = Instance.new("Frame")
 main.Name = "Main"
@@ -114,7 +103,6 @@ main.BorderSizePixel = 0
 main.AnchorPoint = Vector2.new(0.5, 0.5)
 main.Position = UDim2.fromScale(0.5, 0.5)
 main.Size = UDim2.fromOffset(358, 297)
-main.Parent = mainContainer
 
 local topLabels = Instance.new("Frame")
 topLabels.Name = "TopLabels"
@@ -231,33 +219,21 @@ uIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
 uIListLayout.Parent = gamesHolder
 
 gamesHolder.Parent = main
--- main is now parented to mainContainer above
+main.Parent = katsuraGui
 
 local katsuraLoading = Instance.new("ScreenGui")
 katsuraLoading.Name = "KatsuraLoading"
 katsuraLoading.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-katsuraLoading.ResetOnSpawn = false
-katsuraLoading.IgnoreGuiInset = true
-katsuraLoading.Parent = game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui")
+katsuraLoading.Parent = katsuraMs
 
--- Create a full-screen invisible container for loading window centering
-local loadingContainer = Instance.new("Frame")
-loadingContainer.Name = "LoadingContainer"
-loadingContainer.BackgroundTransparency = 1
-loadingContainer.Size = UDim2.fromScale(1, 1)
-loadingContainer.Position = UDim2.fromScale(0, 0)
-loadingContainer.AnchorPoint = Vector2.new(0, 0)
-loadingContainer.Parent = katsuraLoading
-
-local LoadingWindow = Instance.new("Frame")
-LoadingWindow.Name = "LoadingWindow"
-LoadingWindow.BackgroundColor3 = KatsuraUIConfig.Theme.PrimaryBG
-LoadingWindow.BorderColor3 = Color3.fromRGB(0, 0, 0)
-LoadingWindow.BorderSizePixel = 0
-LoadingWindow.AnchorPoint = Vector2.new(0.5, 0.5)
-LoadingWindow.Position = UDim2.fromScale(0.5, 0.5)
-LoadingWindow.Size = UDim2.fromOffset(148, 133)
-LoadingWindow.Parent = loadingContainer
+local loadingWindow = Instance.new("Frame")
+loadingWindow.Name = "LoadingWindow"
+loadingWindow.BackgroundColor3 = KatsuraUIConfig.Theme.PrimaryBG
+loadingWindow.BorderColor3 = Color3.fromRGB(0, 0, 0)
+loadingWindow.BorderSizePixel = 0
+loadingWindow.AnchorPoint = Vector2.new(0.5, 0.5)
+loadingWindow.Position = UDim2.fromScale(0.5, 0.5)
+loadingWindow.Size = UDim2.fromOffset(148, 133)
 
 local topLabels = Instance.new("Frame")
 topLabels.Name = "TopLabels"
@@ -328,7 +304,7 @@ loadingLine.Parent = backgroundLoadBar
 
 backgroundLoadBar.Parent = topLabels
 
-topLabels.Parent = LoadingWindow
+topLabels.Parent = loadingWindow
 
 local kapaLogo = Instance.new("ImageLabel")
 kapaLogo.Name = "KatsuraLogo"
@@ -341,9 +317,9 @@ kapaLogo.BorderColor3 = Color3.fromRGB(0, 0, 0)
 kapaLogo.BorderSizePixel = 0
 kapaLogo.Position = UDim2.fromScale(0.265, 0.338)
 kapaLogo.Size = UDim2.fromOffset(69, 56)
-kapaLogo.Parent = LoadingWindow
+kapaLogo.Parent = loadingWindow
 
--- LoadingWindow is now parented to loadingContainer above
+loadingWindow.Parent = katsuraLoading
 
 
 local gameFrame = Instance.new("Frame")
