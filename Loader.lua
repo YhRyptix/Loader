@@ -627,8 +627,15 @@ function Katsura.LoadingEffect(duration, player, frameConfigs, mainTemplate, gam
     clonedLoadingUI.Parent = player:WaitForChild("PlayerGui")
     clonedLoadingUI.Enabled = true
 
-    local backgroundFrame = clonedLoadingUI.LoadingWindow.TopLabels:FindFirstChild("BackgroundLoadBar")
-        Katsura.MakeDraggable(clonedLoadingUI.LoadingWindow)
+
+    -- Find LoadingWindow inside the container
+    local loadingWindow = clonedLoadingUI:FindFirstChild("LoadingContainer") and clonedLoadingUI.LoadingContainer:FindFirstChild("LoadingWindow")
+    if not loadingWindow then
+        warn("LoadingWindow not found in LoadingContainer")
+        return
+    end
+    local backgroundFrame = loadingWindow.TopLabels:FindFirstChild("BackgroundLoadBar")
+    Katsura.MakeDraggable(loadingWindow)
 
     local loadingLine = backgroundFrame and backgroundFrame:FindFirstChild("LoadingLine")
     if not backgroundFrame or not loadingLine then return end
