@@ -100,7 +100,8 @@ main.Name = "Main"
 main.BackgroundColor3 = KatsuraUIConfig.Theme.PrimaryBG
 main.BorderColor3 = Color3.fromRGB(0, 0, 0)
 main.BorderSizePixel = 0
-main.Position = UDim2.fromScale(0.413, 0.207)
+main.AnchorPoint = Vector2.new(0.5, 0.5)
+main.Position = UDim2.fromScale(0.5, 0.5)
 main.Size = UDim2.fromOffset(358, 297)
 
 local topLabels = Instance.new("Frame")
@@ -230,7 +231,8 @@ loadingWindow.Name = "LoadingWindow"
 loadingWindow.BackgroundColor3 = KatsuraUIConfig.Theme.PrimaryBG
 loadingWindow.BorderColor3 = Color3.fromRGB(0, 0, 0)
 loadingWindow.BorderSizePixel = 0
-loadingWindow.Position = UDim2.fromScale(0.462, 0.394)
+loadingWindow.AnchorPoint = Vector2.new(0.5, 0.5)
+loadingWindow.Position = UDim2.fromScale(0.5, 0.5)
 loadingWindow.Size = UDim2.fromOffset(148, 133)
 
 local topLabels = Instance.new("Frame")
