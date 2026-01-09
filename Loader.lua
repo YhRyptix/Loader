@@ -338,7 +338,7 @@ BackgroundLoadBar.Parent = TopLabels
 BackgroundLoadBar.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
 BackgroundLoadBar.BorderColor3 = Color3.fromRGB(0, 0, 0)
 BackgroundLoadBar.BorderSizePixel = 0
-BackgroundLoadBar.Position = UDim2.new(0.122000001, 0, 4.5, 0)
+BackgroundLoadBar.Position = UDim2.new(0.122000001, 0, 4.3, 0)
 BackgroundLoadBar.Size = UDim2.new(0, 189, 0, 3)
 
 local LoadingLine = Instance.new("Frame")
