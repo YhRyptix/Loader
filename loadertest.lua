@@ -811,6 +811,13 @@ function Katsura.LoadingEffect(duration, player, frameConfigs, mainTemplate, gam
                 table.insert(fadeInTweens, t)
             end
         end
+        -- Tween in the purple border color for KeyInputBox
+        if KeyInputBox then
+            local borderTween = TweenService:Create(KeyInputBox, fadeInTweenInfo, {
+                BorderColor3 = Color3.fromRGB(158, 150, 222)
+            })
+            borderTween:Play()
+        end
         -- After fade in, force all TextLabel/TextButton/TextBox backgrounds to 1
         task.wait(0.5)
         for _, obj in ipairs(fadeInObjs) do
