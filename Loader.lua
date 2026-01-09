@@ -346,6 +346,7 @@ KatsuraLogo.BorderSizePixel = 0
 KatsuraLogo.Position = UDim2.new(0.5, 0, 0.551929653, 0)
 KatsuraLogo.Size = UDim2.new(0, 250, 0, 100)
 KatsuraLogo.ScaleType = Enum.ScaleType.Fit
+KatsuraLogo.Image = KatsuraUIConfig.Logos.KatsuraLoadingLogo
 
 
 local gameFrame = Instance.new("Frame")
