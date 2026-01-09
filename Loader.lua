@@ -280,7 +280,7 @@ KatsuraLogo.BorderSizePixel = 0
 KatsuraLogo.Position = UDim2.new(0.5, 0, 0.551929653, 0)
 KatsuraLogo.Size = UDim2.new(0, 250, 0, 100)
 KatsuraLogo.ScaleType = Enum.ScaleType.Fit
-KatsuraLogo.Image = "rbxasset://c3e70079e6726e02047645ca3190924e/katsuralogo.png"
+KatsuraLogo.Image = KatsuraUIConfig.Logos.KatsuraLoadingLogo
 
 loadingWindow.Parent = katsuraLoading
 
