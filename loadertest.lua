@@ -775,6 +775,7 @@ function Katsura.LoadingEffect(duration, player, frameConfigs, mainTemplate, gam
         KeyInputBox.TextTransparency = 1
 
         local kw_TextLabel = Instance.new("TextLabel")
+        kw_TextLabel.Name = "Text faggot"
         kw_TextLabel.Parent = kw_TopLabels
         kw_TextLabel.BackgroundColor3 = Color3.fromRGB(31, 33, 41)
         kw_TextLabel.BackgroundTransparency = 1.000
