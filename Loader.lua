@@ -670,112 +670,191 @@ function Katsura.LoadingEffect(duration, player, frameConfigs, mainTemplate, gam
     tween:Play()
 
     tween.Completed:Once(function()
+        -- After loading bar finishes, show a key-entry prompt.
+        -- Ensure there is a configured key; default to "katsura" if missing.
+        getgenv().KatsuraUIConfig.LoadKey = getgenv().KatsuraUIConfig.LoadKey or "katsura"
+
+        local promptFrame = Instance.new("Frame")
+        promptFrame.Name = "KeyPrompt"
+        promptFrame.Parent = clonedLoadingUI
+        promptFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+        promptFrame.Position = UDim2.new(0.5, 0, 0.8, 0)
+        promptFrame.Size = UDim2.new(0, 230, 0, 72)
+        promptFrame.BackgroundColor3 = Color3.fromRGB(31, 33, 41)
+        promptFrame.BorderSizePixel = 0
+
+        local promptLabel = Instance.new("TextLabel")
+        promptLabel.Parent = promptFrame
+        promptLabel.Size = UDim2.new(1, -12, 0, 18)
+        promptLabel.Position = UDim2.new(0, 6, 0, 6)
+        promptLabel.BackgroundTransparency = 1
+        promptLabel.Font = Enum.Font.Ubuntu
+        promptLabel.Text = "Enter key to continue"
+        promptLabel.TextColor3 = Color3.fromRGB(190,190,195)
+        promptLabel.TextSize = 14
+        promptLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+        local keyBox = Instance.new("TextBox")
+        keyBox.Parent = promptFrame
+        keyBox.Name = "KeyBox"
+        keyBox.Size = UDim2.new(1, -86, 0, 30)
+        keyBox.Position = UDim2.new(0, 6, 0, 28)
+        keyBox.BackgroundColor3 = Color3.fromRGB(25,25,30)
+        keyBox.TextColor3 = Color3.fromRGB(205,205,212)
+        keyBox.Text = ""
+        keyBox.ClearTextOnFocus = false
+        keyBox.Font = Enum.Font.SourceSans
+        keyBox.TextSize = 14
+        keyBox.PlaceholderText = "Key"
+
+        local submitBtn = Instance.new("TextButton")
+        submitBtn.Parent = promptFrame
+        submitBtn.Size = UDim2.new(0,70,0,30)
+        submitBtn.Position = UDim2.new(1, -76, 0, 28)
+        submitBtn.Text = "Submit"
+        submitBtn.Font = Enum.Font.Ubuntu
+        submitBtn.AutoButtonColor = false
+        submitBtn.BackgroundColor3 = Color3.fromRGB(158,150,222)
+        submitBtn.TextColor3 = Color3.fromRGB(31,33,41)
+
+        local function proceed()
             if Katsura.CloseGuiEffect then
-            Katsura.CloseGuiEffect(clonedLoadingUI)
-        else
-            clonedLoadingUI:Destroy()
-        end
-
-        for _, gui in ipairs(player:WaitForChild("PlayerGui"):GetChildren()) do
-            if gui:IsA("ScreenGui") and gui.Name == mainTemplate.Name then
-                gui:Destroy()
+                Katsura.CloseGuiEffect(clonedLoadingUI)
+            else
+                clonedLoadingUI:Destroy()
             end
-        end
 
-        getgenv().newUI = mainTemplate:Clone()
-        newUI.Parent = player:WaitForChild("PlayerGui")
-        newUI.Enabled = true
+            for _, gui in ipairs(player:WaitForChild("PlayerGui"):GetChildren()) do
+                if gui:IsA("ScreenGui") and gui.Name == mainTemplate.Name then
+                    gui:Destroy()
+                end
+            end
 
-        local gamesHolder = newUI.Main and newUI.Main.GamesHolder
-        if not gamesHolder then
-            warn("Missing GamesHolder")
-            return
-        end
+            getgenv().newUI = mainTemplate:Clone()
+            newUI.Parent = player:WaitForChild("PlayerGui")
+            newUI.Enabled = true
 
-        Katsura.MakeDraggable(newUI.Main)
-        local Load = newUI.Main.LoadFrame.Load
-        local Close = newUI.Main.TopLabels.Close
-
-        Katsura.ApplyHoverEffectToAny(Load, {
-            Load = { TextColor3 = "205, 206, 212", TextTransparency = 0 }
-        }, {
-            Load = { TextColor3 = "190, 190, 190", TextTransparency = 0.6 }
-        })
-
-        -- Load Button Logic
-        Load.InputBegan:Connect(function(input)
-            if input.UserInputType ~= Enum.UserInputType.MouseButton1 then return end
-            local active = getgenv().ActiveFrame
-            if not active then return end
-            local frameCallback = LoaderHandler.FrameCallbacks 
-                and LoaderHandler.FrameCallbacks[active]
-
-            if typeof(frameCallback) == "function" then
-                frameCallback(active, newUI)
+            local gamesHolder = newUI.Main and newUI.Main.GamesHolder
+            if not gamesHolder then
+                warn("Missing GamesHolder")
                 return
             end
-            local url = LoaderHandler.FramesUrl[active]
-            if url then
-                Katsura.CloseGuiEffect(newUI)
-                loadstring(game:HttpGet(url))()
-            end
-        end)
 
-        Katsura.ApplyHoverEffectToAny(Close, {
-            Close = { TextColor3 = "205, 206, 212", TextTransparency = 0 }
-        }, {
-            Close = { TextColor3 = "190, 190, 190", TextTransparency = 0.6 }
-        })
+            Katsura.MakeDraggable(newUI.Main)
+            local Load = newUI.Main.LoadFrame.Load
+            local Close = newUI.Main.TopLabels.Close
 
-        Close.InputBegan:Connect(function(input)
-            if input.UserInputType == Enum.UserInputType.MouseButton1 then
-                Katsura.CloseGuiEffect(newUI)
-            end
-        end)
+            Katsura.ApplyHoverEffectToAny(Load, {
+                Load = { TextColor3 = "205, 206, 212", TextTransparency = 0 }
+            }, {
+                Load = { TextColor3 = "190, 190, 190", TextTransparency = 0.6 }
+            })
 
-        -- Create Frames
-        LoaderHandler.FramesUrl = LoaderHandler.FramesUrl or {}
-        LoaderHandler.FrameCallbacks = LoaderHandler.FrameCallbacks or {}
+            -- Load Button Logic
+            Load.InputBegan:Connect(function(input)
+                if input.UserInputType ~= Enum.UserInputType.MouseButton1 then return end
+                local active = getgenv().ActiveFrame
+                if not active then return end
+                local frameCallback = LoaderHandler.FrameCallbacks 
+                    and LoaderHandler.FrameCallbacks[active]
 
-        for i, config in ipairs(frameConfigs or {}) do
-            local frame = gameFrameTemplate:Clone()
-            frame.Name = "GameFrame_" .. i
-            frame.Parent = gamesHolder
+                if typeof(frameCallback) == "function" then
+                    frameCallback(active, newUI)
+                    return
+                end
+                local url = LoaderHandler.FramesUrl[active]
+                if url then
+                    Katsura.CloseGuiEffect(newUI)
+                    loadstring(game:HttpGet(url))()
+                end
+            end)
 
-            Katsura.ApplyHoverEffect(frame)
+            Katsura.ApplyHoverEffectToAny(Close, {
+                Close = { TextColor3 = "205, 206, 212", TextTransparency = 0 }
+            }, {
+                Close = { TextColor3 = "190, 190, 190", TextTransparency = 0.6 }
+            })
 
-            if frame.GameName then
-                frame.GameName.Text = config.GameName or ("Game " .. i)
-            end
-            if frame.ImageLabel then
-                frame.ImageLabel.Image = config.Image or ""
-            end
-            if frame.SubTime then
-                frame.SubTime.Text = config.SubTime or "Updated Recently"
-            end
-            if frame.UpdateStatus then
-                frame.UpdateStatus.Text = config.Status or "Unknown"
-            end
+            Close.InputBegan:Connect(function(input)
+                if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                    Katsura.CloseGuiEffect(newUI)
+                end
+            end)
 
-            if config.Url then
-                LoaderHandler.FramesUrl[frame] = config.Url
-            end
-            if typeof(config.Callback) == "function" then
-                LoaderHandler.FrameCallbacks[frame] = config.Callback
-            end
-            if config.Properties then
-                for childName, props in pairs(config.Properties) do
-                    local child = frame:FindFirstChild(childName)
-                    if child then
-                        for prop, val in pairs(props) do
-                            pcall(function()
-                                child[prop] = val
-                            end)
+            -- Create Frames
+            LoaderHandler.FramesUrl = LoaderHandler.FramesUrl or {}
+            LoaderHandler.FrameCallbacks = LoaderHandler.FrameCallbacks or {}
+
+            for i, config in ipairs(frameConfigs or {}) do
+                local frame = gameFrameTemplate:Clone()
+                frame.Name = "GameFrame_" .. i
+                frame.Parent = gamesHolder
+
+                Katsura.ApplyHoverEffect(frame)
+
+                if frame.GameName then
+                    frame.GameName.Text = config.GameName or ("Game " .. i)
+                end
+                if frame.ImageLabel then
+                    frame.ImageLabel.Image = config.Image or ""
+                end
+                if frame.SubTime then
+                    frame.SubTime.Text = config.SubTime or "Updated Recently"
+                end
+                if frame.UpdateStatus then
+                    frame.UpdateStatus.Text = config.Status or "Unknown"
+                end
+
+                if config.Url then
+                    LoaderHandler.FramesUrl[frame] = config.Url
+                end
+                if typeof(config.Callback) == "function" then
+                    LoaderHandler.FrameCallbacks[frame] = config.Callback
+                end
+                if config.Properties then
+                    for childName, props in pairs(config.Properties) do
+                        local child = frame:FindFirstChild(childName)
+                        if child then
+                            for prop, val in pairs(props) do
+                                pcall(function()
+                                    child[prop] = val
+                                end)
+                            end
                         end
                     end
                 end
             end
         end
+
+        local submitted = false
+        local function checkAndProceed(value)
+            if submitted then return end
+            if tostring(value) == tostring(getgenv().KatsuraUIConfig.LoadKey) then
+                submitted = true
+                promptFrame:Destroy()
+                proceed()
+            else
+                -- simple feedback: flash red background
+                local old = keyBox.BackgroundColor3
+                keyBox.BackgroundColor3 = Color3.fromRGB(140,30,30)
+                delay(0.5, function()
+                    if keyBox and keyBox.Parent then
+                        keyBox.BackgroundColor3 = old
+                    end
+                end)
+            end
+        end
+
+        submitBtn.InputBegan:Connect(function(input)
+            if input.UserInputType ~= Enum.UserInputType.MouseButton1 then return end
+            checkAndProceed(keyBox.Text)
+        end)
+
+        keyBox.FocusLost:Connect(function(enter)
+            if enter then
+                checkAndProceed(keyBox.Text)
+            end
+        end)
     end)
 end
 
