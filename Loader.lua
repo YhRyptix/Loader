@@ -269,7 +269,6 @@ uIStroke.Parent = loadFrame
     keyTextLabel.TextXAlignment = Enum.TextXAlignment.Left
 
     -- No BackgroundLoadBar or LoadingLine in KeyLoadingGui
-loadingWindow.Size = UDim2.new(0, 250, 0, 133)
 
 -- Removed duplicate/redefined local KatsuraLogo and related objects.
 
