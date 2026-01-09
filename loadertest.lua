@@ -811,7 +811,7 @@ function Katsura.LoadingEffect(duration, player, frameConfigs, mainTemplate, gam
 
         local kw_TextLabel = Instance.new("TextLabel")
         kw_TextLabel.Parent = kw_TopLabels
-        kw_TextLabel.BackgroundColor3 = Color3.fromRGB(31, 33, 41)
+        kw_TextLabel.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
         kw_TextLabel.BackgroundTransparency = 1.000
         kw_TextLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
         kw_TextLabel.BorderSizePixel = 0
@@ -966,26 +966,11 @@ function Katsura.LoadingEffect(duration, player, frameConfigs, mainTemplate, gam
         end
 
         -- Key validation and interactions
-        local CORRECT_KEY = "KATSURA-2024-ACCESS-GRANTED"
-        local function showError()
-            KeyInputBox.BorderColor3 = Color3.fromRGB(255, 100, 100)
-            KeyInputBox.Text = ""
-            KeyInputBox.PlaceholderText = "Incorrect key! Try again."
-            KeyInputBox.PlaceholderColor3 = Color3.fromRGB(255, 150, 150)
-            task.wait(2)
-            KeyInputBox.BorderColor3 = Color3.fromRGB(158, 150, 222)
-            KeyInputBox.PlaceholderText = "Enter your key here..."
-            KeyInputBox.PlaceholderColor3 = Color3.fromRGB(120, 120, 125)
-        end
 
-        local function showSuccess()
-            KeyInputBox.BorderColor3 = Color3.fromRGB(100, 255, 100)
-            KeyInputBox.Text = "Access Granted!"
-            KeyInputBox.TextColor3 = Color3.fromRGB(100, 255, 100)
-            task.wait(0.6)
-            keyGui:Destroy()
-            showMainUI()
-        end
+        local CORRECT_KEY = "KATSURA-2024-ACCESS-GRANTED"
+        local processingColor = Color3.fromRGB(200, 200, 255) -- light highlight
+        local defaultBorderColor = Color3.fromRGB(158, 150, 222)
+        local defaultTextColor = Color3.fromRGB(190, 190, 195)
 
         local function isKeyCorrect(inputKey)
             return inputKey == CORRECT_KEY
@@ -993,11 +978,20 @@ function Katsura.LoadingEffect(duration, player, frameConfigs, mainTemplate, gam
 
         KeyInputBox.FocusLost:Connect(function(enterPressed)
             if not enterPressed then return end
+            -- highlight to show processing
+            KeyInputBox.BorderColor3 = processingColor
+            -- Optionally, you can also lighten the background for a moment
+            KeyInputBox.BackgroundColor3 = Color3.fromRGB(41, 43, 61)
+            -- Wait a short moment to simulate processing
+            task.wait(0.4)
             local inputKey = KeyInputBox.Text
             if isKeyCorrect(inputKey) then
-                showSuccess()
+                keyGui:Destroy()
+                showMainUI()
             else
-                showError()
+                -- revert highlight, but do not show error
+                KeyInputBox.BorderColor3 = defaultBorderColor
+                KeyInputBox.BackgroundColor3 = Color3.fromRGB(31, 33, 41)
             end
         end)
 
