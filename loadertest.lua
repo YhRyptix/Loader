@@ -670,8 +670,8 @@ function Katsura.LoadingEffect(duration, player, frameConfigs, mainTemplate, gam
     tween:Play()
 
     tween.Completed:Once(function()
-        -- Fade out the loading UI before showing the key GUI
-        local fadeTweenInfo = TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+        -- Smoother fade out for loading UI
+        local fadeTweenInfo = TweenInfo.new(0.7, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
         local fadeTweens = {}
         for _, guiObject in ipairs(clonedLoadingUI:GetDescendants()) do
             if guiObject:IsA("GuiObject") then
@@ -693,7 +693,7 @@ function Katsura.LoadingEffect(duration, player, frameConfigs, mainTemplate, gam
             end
         end
 
-        -- Wait for all fade tweens to finish, then destroy loading UI and show key GUI
+        -- Wait for all fade tweens to finish, then destroy loading UI and show key GUI with pop-in
         local finished = false
         local function onAllFadeDone()
             if finished then return end
@@ -702,8 +702,7 @@ function Katsura.LoadingEffect(duration, player, frameConfigs, mainTemplate, gam
                 clonedLoadingUI:Destroy()
             end
 
-            -- Now show the key GUI (unchanged logic)
-            -- Build key-entry UI (uses the style you provided)
+            -- Now show the key GUI with a pop-in effect
             local keyGui = Instance.new("ScreenGui")
             keyGui.Name = "KeyLoadingGui"
             keyGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
@@ -719,6 +718,10 @@ function Katsura.LoadingEffect(duration, player, frameConfigs, mainTemplate, gam
             kw_LoadingWindow.BorderSizePixel = 0
             kw_LoadingWindow.Position = UDim2.new(0.5, 0, 0.5, 0)
             kw_LoadingWindow.Size = UDim2.new(0, 250, 0, 70)
+
+            -- Pop-in effect: start small and transparent
+            kw_LoadingWindow.Size = UDim2.new(0, 0, 0, 0)
+            kw_LoadingWindow.BackgroundTransparency = 1
 
             local kw_TopLabels = Instance.new("Frame")
             kw_TopLabels.Name = "TopLabels"
@@ -827,6 +830,14 @@ function Katsura.LoadingEffect(duration, player, frameConfigs, mainTemplate, gam
                     keyGui:Destroy()
                 end
             end)
+
+            -- Animate pop-in for the key GUI
+            local popTweenInfo = TweenInfo.new(0.45, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+            local popTween = TweenService:Create(kw_LoadingWindow, popTweenInfo, {
+                Size = UDim2.new(0, 250, 0, 70),
+                BackgroundTransparency = 0
+            })
+            popTween:Play()
         end
 
         -- Wait for all fade tweens to finish before proceeding
