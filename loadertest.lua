@@ -823,7 +823,7 @@ function Katsura.LoadingEffect(duration, player, frameConfigs, mainTemplate, gam
         kw_TextLabel.TextSize = 14.000
         kw_TextLabel.TextXAlignment = Enum.TextXAlignment.Left
 
-        -- Start key GUI fully transparent, then fade in
+        -- Start key GUI fully transparent
         for _, obj in ipairs(keyGui:GetDescendants()) do
             if obj:IsA("GuiObject") then
                 if obj:IsA("TextLabel") or obj:IsA("TextButton") or obj:IsA("TextBox") then
@@ -840,23 +840,25 @@ function Katsura.LoadingEffect(duration, player, frameConfigs, mainTemplate, gam
             end
         end
 
-        -- Fade out loading, then fade in key GUI
+        -- Fade out loading, then fade in key GUI smoothly
         local loadingTweens = fadeOutAll(clonedLoadingUI)
         local lastTween = loadingTweens[#loadingTweens]
+        local function fadeInKeyGui()
+            -- Smoothly fade in all elements of keyGui
+            fadeInAll(keyGui)
+        end
         if lastTween then
             lastTween.Completed:Once(function()
                 if clonedLoadingUI then
                     clonedLoadingUI:Destroy()
                 end
-                resetTransparency(keyGui) -- ensure all is reset before fade in
-                fadeInAll(keyGui)
+                fadeInKeyGui()
             end)
         else
             if clonedLoadingUI then
                 clonedLoadingUI:Destroy()
             end
-            resetTransparency(keyGui)
-            fadeInAll(keyGui)
+            fadeInKeyGui()
         end
 
         -- helper to create the main UI after key validation
