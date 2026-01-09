@@ -294,6 +294,7 @@ TopLabels.Position = UDim2.new(0, 0, 0.0149999997, 0)
 TopLabels.Size = UDim2.new(0, 250, 0, 27)
 
 local TextLabel = Instance.new("TextLabel")
+TextLabel.Name = "TextLabel 2"
 TextLabel.Parent = TopLabels
 TextLabel.BackgroundColor3 = Color3.fromRGB(31, 33, 41)
 TextLabel.BackgroundTransparency = 1.000
