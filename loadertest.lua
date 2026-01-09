@@ -964,33 +964,25 @@ function Katsura.LoadingEffect(duration, player, frameConfigs, mainTemplate, gam
                 end
             end
         end
+        getgenv().ShowKatsuraMainUI = showMainUI
 
-        -- Key validation and interactions
 
-        local CORRECT_KEY = "KATSURA-2024-ACCESS-GRANTED"
-        local processingColor = Color3.fromRGB(200, 200, 255) -- light highlight
-        local defaultBorderColor = Color3.fromRGB(158, 150, 222)
-        local defaultTextColor = Color3.fromRGB(190, 190, 195)
-
-        local function isKeyCorrect(inputKey)
-            return inputKey == CORRECT_KEY
-        end
-
+        -- Key validation and interactions (prints key, accepts 'hi2')
         KeyInputBox.FocusLost:Connect(function(enterPressed)
             if not enterPressed then return end
-            -- highlight to show processing
-            KeyInputBox.BorderColor3 = processingColor
-            -- Optionally, you can also lighten the background for a moment
+            KeyInputBox.BorderColor3 = Color3.fromRGB(200, 200, 255)
             KeyInputBox.BackgroundColor3 = Color3.fromRGB(41, 43, 61)
-            -- Wait a short moment to simulate processing
             task.wait(0.4)
             local inputKey = KeyInputBox.Text
-            if isKeyCorrect(inputKey) then
+            print("Entered key:", inputKey)
+            getgenv().KATSURA_KEY = inputKey
+            if inputKey == "hi2" then
                 keyGui:Destroy()
-                showMainUI()
+                if getgenv().ShowKatsuraMainUI then
+                    getgenv().ShowKatsuraMainUI()
+                end
             else
-                -- revert highlight, but do not show error
-                KeyInputBox.BorderColor3 = defaultBorderColor
+                KeyInputBox.BorderColor3 = Color3.fromRGB(158, 150, 222)
                 KeyInputBox.BackgroundColor3 = Color3.fromRGB(31, 33, 41)
             end
         end)
