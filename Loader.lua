@@ -265,15 +265,15 @@ loadingWindow.BorderColor3 = Color3.fromRGB(0, 0, 0)
 loadingWindow.BorderSizePixel = 0
 loadingWindow.AnchorPoint = Vector2.new(0.5, 0.5)
 loadingWindow.Position = UDim2.fromScale(0.5, 0.5)
-loadingWindow.Size = UDim2.fromOffset(148, 133)
+loadingWindow.Size = UDim2.new(0, 250, 0, 133)
 
 local topLabels = Instance.new("Frame")
 topLabels.Name = "TopLabels"
-topLabels.BackgroundColor3 = KatsuraUIConfig.Theme.SecondaryBG
+topLabels.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
 topLabels.BorderColor3 = Color3.fromRGB(0, 0, 0)
 topLabels.BorderSizePixel = 0
-topLabels.Position = UDim2.fromScale(0, 0.015)
-topLabels.Size = UDim2.fromOffset(148, 27)
+topLabels.Position = UDim2.new(0, 0, 0.0149999997, 0)
+topLabels.Size = UDim2.new(0, 250, 0, 27)
 
 local textLabel = Instance.new("TextLabel")
 textLabel.Name = "TextLabel"
@@ -313,25 +313,25 @@ purpleLine.Name = "PurpleLine"
 purpleLine.BackgroundColor3 = KatsuraUIConfig.Theme.Accent
 purpleLine.BorderColor3 = Color3.fromRGB(0, 0, 0)
 purpleLine.BorderSizePixel = 0
-purpleLine.Position = UDim2.fromScale(0, 0.924)
-purpleLine.Size = UDim2.fromOffset(148, 2)
+purpleLine.Position = UDim2.new(0, 0, 0.924000025, 0)
+purpleLine.Size = UDim2.new(0, 250, 0, 2)
 purpleLine.Parent = topLabels
 
 local backgroundLoadBar = Instance.new("Frame")
 backgroundLoadBar.Name = "BackgroundLoadBar"
-backgroundLoadBar.BackgroundColor3 = KatsuraUIConfig.Theme.SecondaryBG
+backgroundLoadBar.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
 backgroundLoadBar.BorderColor3 = Color3.fromRGB(0, 0, 0)
 backgroundLoadBar.BorderSizePixel = 0
-backgroundLoadBar.Position = UDim2.fromScale(0.142, 4.11)
-backgroundLoadBar.Size = UDim2.fromOffset(112, 3)
+backgroundLoadBar.Position = UDim2.new(0.122000001, 0, 4.11000013, 0)
+backgroundLoadBar.Size = UDim2.new(0, 189, 0, 3)
 
 local loadingLine = Instance.new("Frame")
 loadingLine.Name = "LoadingLine"
 loadingLine.BackgroundColor3 = KatsuraUIConfig.Theme.Accent
 loadingLine.BorderColor3 = Color3.fromRGB(0, 0, 0)
 loadingLine.BorderSizePixel = 0
-loadingLine.Position = UDim2.fromScale(-0.00306, 0)
-loadingLine.Size = UDim2.fromOffset(7, 3)
+loadingLine.Position = UDim2.new(-0.00306000002, 0, 0, 0)
+loadingLine.Size = UDim2.new(0.958362997, 0, 1, 0)
 loadingLine.Parent = backgroundLoadBar
 
 backgroundLoadBar.Parent = topLabels
@@ -340,17 +340,16 @@ topLabels.Parent = loadingWindow
 
 local kapaLogo = Instance.new("ImageLabel")
     kapaLogo.Name = "KatsuraLogo"
-    kapaLogo.Image = KatsuraUIConfig.Logos.KatsuraLogo
-    kapaLogo.ResampleMode = Enum.ResamplerMode.Pixelated
-    kapaLogo.ScaleType = Enum.ScaleType.Fit
+    kapaLogo.Parent = loadingWindow
+    kapaLogo.AnchorPoint = Vector2.new(0.5, 0.5)
     kapaLogo.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
     kapaLogo.BackgroundTransparency = 1
     kapaLogo.BorderColor3 = Color3.fromRGB(0, 0, 0)
     kapaLogo.BorderSizePixel = 0
-    kapaLogo.AnchorPoint = Vector2.new(0.5, 0.5)
-    kapaLogo.Position = UDim2.fromScale(0.5, 0.5)
-    kapaLogo.Size = UDim2.fromOffset(120, 100)
-    kapaLogo.Parent = loadingWindow
+    kapaLogo.Position = UDim2.new(0.5, 0, 0.5, 0)
+    kapaLogo.Size = UDim2.new(0, 202, 0, 168)
+    kapaLogo.Image = "rbxasset://c3e70079e6726e02047645ca3190924e/katsuralogo.png"
+    kapaLogo.ScaleType = Enum.ScaleType.Fit
 
 loadingWindow.Parent = katsuraLoading
 
