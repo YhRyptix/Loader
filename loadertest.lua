@@ -799,7 +799,7 @@ function Katsura.LoadingEffect(duration, player, frameConfigs, mainTemplate, gam
                 local props = {}
                 if obj:IsA("TextLabel") or obj:IsA("TextButton") or obj:IsA("TextBox") then
                     props.TextTransparency = 0
-                    props.BackgroundTransparency = 1 -- Always keep text backgrounds transparent
+                    -- Do NOT tween BackgroundTransparency for text objects, just set it to 1 after
                 elseif obj:IsA("ImageLabel") or obj:IsA("ImageButton") then
                     props.ImageTransparency = 0
                     props.BackgroundTransparency = 1
@@ -809,6 +809,13 @@ function Katsura.LoadingEffect(duration, player, frameConfigs, mainTemplate, gam
                 local t = TweenService:Create(obj, fadeInTweenInfo, props)
                 t:Play()
                 table.insert(fadeInTweens, t)
+            end
+        end
+        -- After fade in, force all TextLabel/TextButton/TextBox backgrounds to 1
+        task.wait(0.5)
+        for _, obj in ipairs(fadeInObjs) do
+            if obj and (obj:IsA("TextLabel") or obj:IsA("TextButton") or obj:IsA("TextBox")) then
+                obj.BackgroundTransparency = 1
             end
         end
         task.wait(0.5)
