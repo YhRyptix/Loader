@@ -306,33 +306,7 @@ Close.ImageColor3 = Color3.fromRGB(141, 141, 141)
 Close.ImageRectOffset = Vector2.new(304, 304)
 Close.ImageRectSize = Vector2.new(96, 96)
 
--- Key input frame (hidden by default, will be revealed after loading)
-local KeyInputFrame = Instance.new("Frame")
-KeyInputFrame.Name = "KeyInputFrame"
-KeyInputFrame.Parent = TopLabels
-KeyInputFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
-KeyInputFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
-KeyInputFrame.BorderSizePixel = 0
-KeyInputFrame.Position = UDim2.new(0.0270000007, 0, 0.400000006, 0)
-KeyInputFrame.Size = UDim2.new(0, 223, 0, 30)
-KeyInputFrame.BackgroundTransparency = 1
-
-local KeyInputBox = Instance.new("TextBox")
-KeyInputBox.Name = "KeyInputBox"
-KeyInputBox.Parent = KeyInputFrame
-KeyInputBox.BackgroundColor3 = Color3.fromRGB(31, 33, 41)
-KeyInputBox.BorderColor3 = Color3.fromRGB(158, 150, 222)
-KeyInputBox.Position = UDim2.new(0, 0, 0.200000003, 0)
-KeyInputBox.Size = UDim2.new(1.05381179, 0, 0.600000024, 0)
-KeyInputBox.ClearTextOnFocus = false
-KeyInputBox.Font = Enum.Font.Ubuntu
-KeyInputBox.PlaceholderColor3 = Color3.fromRGB(120, 120, 125)
-KeyInputBox.PlaceholderText = "Enter your key here..."
-KeyInputBox.Text = ""
-KeyInputBox.TextColor3 = Color3.fromRGB(190, 190, 195)
-KeyInputBox.TextSize = 12.000
-KeyInputBox.BackgroundTransparency = 1
-KeyInputBox.TextTransparency = 0
+-- Key input is handled via a separate prompt GUI when enabled in config
 
 local UIAspectRatioConstraint = Instance.new("UIAspectRatioConstraint")
 UIAspectRatioConstraint.Parent = Close
@@ -685,151 +659,142 @@ function Katsura.LoadingEffect(duration, player, frameConfigs, mainTemplate, gam
     tween:Play()
 
     tween.Completed:Once(function()
-        -- After loading bar finishes, fade out loading visuals then show key-entry textbox.
-        getgenv().KatsuraUIConfig.LoadKey = getgenv().KatsuraUIConfig.LoadKey or "katsura"
+        -- After loading finishes, either proceed immediately or show a clean optional key prompt
+        local loadKey = getgenv().KatsuraUIConfig.LoadKey
 
-        -- After loading finishes, fade out loading visuals and reveal the key input area
-        local loadingTop = loadingWindow:FindFirstChild("TopLabels")
-        local loadingBar = loadingTop and loadingTop:FindFirstChild("BackgroundLoadBar")
-        local loadingLine = loadingBar and loadingBar:FindFirstChild("LoadingLine")
-        local logo = loadingWindow:FindFirstChild("KatsuraLogo") or loadingWindow:FindFirstChild("kapaLogo")
-        local keyFrame = loadingTop and loadingTop:FindFirstChild("KeyInputFrame")
-        local keyBox = keyFrame and keyFrame:FindFirstChild("KeyInputBox")
+        local function proceedToMain()
+            -- close loading UI
+            if Katsura.CloseGuiEffect then
+                Katsura.CloseGuiEffect(clonedLoadingUI)
+            else
+                clonedLoadingUI:Destroy()
+            end
 
-        local fadeOutInfo = TweenInfo.new(0.28, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut)
-        local fadeInInfo = TweenInfo.new(0.22, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+            -- remove any existing main template instances
+            for _, gui in ipairs(player:WaitForChild("PlayerGui"):GetChildren()) do
+                if gui:IsA("ScreenGui") and gui.Name == mainTemplate.Name then
+                    gui:Destroy()
+                end
+            end
 
-        local fadeTweens = {}
-        if loadingLine then
-            table.insert(fadeTweens, TweenService:Create(loadingLine, fadeOutInfo, {BackgroundTransparency = 1}))
+            -- clone and enable main template
+            getgenv().newUI = mainTemplate:Clone()
+            newUI.Parent = player:WaitForChild("PlayerGui")
+            newUI.Enabled = true
+
+            local gamesHolder = newUI.Main and newUI.Main.GamesHolder
+            if not gamesHolder then
+                warn("Missing GamesHolder")
+                return
+            end
+
+            Katsura.MakeDraggable(newUI.Main)
+            local Load = newUI.Main.LoadFrame.Load
+            local Close = newUI.Main.TopLabels.Close
+
+            Katsura.ApplyHoverEffectToAny(Load, {
+                Load = { TextColor3 = "205, 206, 212", TextTransparency = 0 }
+            }, {
+                Load = { TextColor3 = "190, 190, 190", TextTransparency = 0.6 }
+            })
+
+            -- Create Frames
+            LoaderHandler.FramesUrl = LoaderHandler.FramesUrl or {}
+            LoaderHandler.FrameCallbacks = LoaderHandler.FrameCallbacks or {}
+
+            for i, config in ipairs(frameConfigs or {}) do
+                local frame = gameFrameTemplate:Clone()
+                frame.Name = "GameFrame_" .. i
+                frame.Parent = gamesHolder
+                Katsura.ApplyHoverEffect(frame)
+                if frame.GameName then
+                    frame.GameName.Text = config.GameName or ("Game " .. i)
+                end
+                if frame.ImageLabel then
+                    frame.ImageLabel.Image = config.Image or ""
+                end
+                if frame.SubTime then
+                    frame.SubTime.Text = config.SubTime or "Updated Recently"
+                end
+                if frame.UpdateStatus then
+                    frame.UpdateStatus.Text = config.Status or "Unknown"
+                end
+                if config.Url then
+                    LoaderHandler.FramesUrl[frame] = config.Url
+                end
+                if typeof(config.Callback) == "function" then
+                    LoaderHandler.FrameCallbacks[frame] = config.Callback
+                end
+                if config.Properties then
+                    for childName, props in pairs(config.Properties) do
+                        local child = frame:FindFirstChild(childName)
+                        if child then
+                            for prop, val in pairs(props) do
+                                pcall(function() child[prop] = val end)
+                            end
+                        end
+                    end
+                end
+            end
         end
-        if loadingBar then
-            table.insert(fadeTweens, TweenService:Create(loadingBar, fadeOutInfo, {BackgroundTransparency = 1}))
-        end
-        if loadingTop and loadingTop:FindFirstChild("PurpleLine") then
-            table.insert(fadeTweens, TweenService:Create(loadingTop.PurpleLine, fadeOutInfo, {BackgroundTransparency = 1}))
-        end
-        if logo then
-            table.insert(fadeTweens, TweenService:Create(logo, fadeOutInfo, {ImageTransparency = 1}))
+
+        if not loadKey or tostring(loadKey) == "" then
+            proceedToMain()
+            return
         end
 
-        for _, t in ipairs(fadeTweens) do t:Play() end
+        -- Build a clean key prompt ScreenGui so we don't modify the loading template
+        local promptGui = Instance.new("ScreenGui")
+        promptGui.Name = "KatsuraKeyPrompt"
+        promptGui.ResetOnSpawn = false
+        promptGui.Parent = player:WaitForChild("PlayerGui")
 
-        local last = fadeTweens[#fadeTweens]
-        local function revealKey()
-            if not keyFrame or not keyBox then return end
-            -- fade in key area
-            TweenService:Create(keyFrame, fadeInInfo, {BackgroundTransparency = 0}):Play()
-            TweenService:Create(keyBox, fadeInInfo, {BackgroundTransparency = 0}):Play()
-            -- focus input
-            task.delay(0.12, function()
-                if keyBox and keyBox.Parent then
-                    pcall(function() keyBox:CaptureFocus() end)
+        local promptFrame = Instance.new("Frame")
+        promptFrame.Name = "PromptFrame"
+        promptFrame.Size = UDim2.new(0, 300, 0, 80)
+        promptFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+        promptFrame.Position = UDim2.new(0.5, 0.5, 0.5, 0)
+        promptFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
+        promptFrame.BorderSizePixel = 0
+        promptFrame.BackgroundTransparency = 1
+        promptFrame.Parent = promptGui
+
+        local promptBox = Instance.new("TextBox")
+        promptBox.Name = "KeyBox"
+        promptBox.Parent = promptFrame
+        promptBox.Size = UDim2.new(1, -24, 0, 34)
+        promptBox.Position = UDim2.new(0, 12, 0, 24)
+        promptBox.PlaceholderText = "Enter key and press Enter..."
+        promptBox.ClearTextOnFocus = false
+        promptBox.BackgroundColor3 = Color3.fromRGB(31,33,41)
+        promptBox.BackgroundTransparency = 0
+        promptBox.TextColor3 = Color3.fromRGB(190,190,195)
+        promptBox.TextSize = 14
+        promptBox.Text = ""
+
+        -- simple fade in
+        TweenService:Create(promptFrame, TweenInfo.new(0.24, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundTransparency = 0}):Play()
+        task.delay(0.12, function() pcall(function() promptBox:CaptureFocus() end) end)
+
+        local trying = false
+        promptBox.FocusLost:Connect(function(enterPressed)
+            if not enterPressed then return end
+            if trying then return end
+            trying = true
+            local orig = promptBox.BackgroundColor3
+            local bright = Color3.fromRGB(math.min(255, math.floor(orig.R*255+22)), math.min(255, math.floor(orig.G*255+22)), math.min(255, math.floor(orig.B*255+22)))
+            local tt = TweenService:Create(promptBox, TweenInfo.new(0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundColor3 = bright})
+            tt:Play()
+            tt.Completed:Once(function()
+                if tostring(promptBox.Text) == tostring(loadKey) then
+                    promptGui:Destroy()
+                    proceedToMain()
+                else
+                    TweenService:Create(promptBox, TweenInfo.new(0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundColor3 = orig}):Play()
+                    trying = false
                 end
             end)
-
-            -- handle enter
-            local trying = false
-            keyBox.FocusLost:Connect(function(enterPressed)
-                if not enterPressed then return end
-                if trying then return end
-                trying = true
-                local orig = keyBox.BackgroundColor3
-                local bright = Color3.fromRGB(math.min(255, math.floor(orig.R*255+22)), math.min(255, math.floor(orig.G*255+22)), math.min(255, math.floor(orig.B*255+22)))
-                local tt = TweenService:Create(keyBox, TweenInfo.new(0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundColor3 = bright})
-                tt:Play()
-                tt.Completed:Once(function()
-                    if tostring(keyBox.Text) == tostring(getgenv().KatsuraUIConfig.LoadKey) then
-                        -- animate loadingLine to full and proceed
-                        if loadingLine then
-                            TweenService:Create(loadingLine, TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = UDim2.new(1,0,1,0)}):Play()
-                        end
-                        task.wait(0.9)
-                        -- proceed to main UI
-                        if Katsura.CloseGuiEffect then
-                            Katsura.CloseGuiEffect(clonedLoadingUI)
-                        else
-                            clonedLoadingUI:Destroy()
-                        end
-                        for _, gui in ipairs(player:WaitForChild("PlayerGui"):GetChildren()) do
-                            if gui:IsA("ScreenGui") and gui.Name == mainTemplate.Name then
-                                gui:Destroy()
-                            end
-                        end
-                        getgenv().newUI = mainTemplate:Clone()
-                        newUI.Parent = player:WaitForChild("PlayerGui")
-                        newUI.Enabled = true
-
-                        local gamesHolder = newUI.Main and newUI.Main.GamesHolder
-                        if not gamesHolder then
-                            warn("Missing GamesHolder")
-                            return
-                        end
-
-                        Katsura.MakeDraggable(newUI.Main)
-                        local Load = newUI.Main.LoadFrame.Load
-                        local Close = newUI.Main.TopLabels.Close
-
-                        Katsura.ApplyHoverEffectToAny(Load, {
-                            Load = { TextColor3 = "205, 206, 212", TextTransparency = 0 }
-                        }, {
-                            Load = { TextColor3 = "190, 190, 190", TextTransparency = 0.6 }
-                        })
-
-                        -- Create Frames
-                        LoaderHandler.FramesUrl = LoaderHandler.FramesUrl or {}
-                        LoaderHandler.FrameCallbacks = LoaderHandler.FrameCallbacks or {}
-
-                        for i, config in ipairs(frameConfigs or {}) do
-                            local frame = gameFrameTemplate:Clone()
-                            frame.Name = "GameFrame_" .. i
-                            frame.Parent = gamesHolder
-                            Katsura.ApplyHoverEffect(frame)
-                            if frame.GameName then
-                                frame.GameName.Text = config.GameName or ("Game " .. i)
-                            end
-                            if frame.ImageLabel then
-                                frame.ImageLabel.Image = config.Image or ""
-                            end
-                            if frame.SubTime then
-                                frame.SubTime.Text = config.SubTime or "Updated Recently"
-                            end
-                            if frame.UpdateStatus then
-                                frame.UpdateStatus.Text = config.Status or "Unknown"
-                            end
-                            if config.Url then
-                                LoaderHandler.FramesUrl[frame] = config.Url
-                            end
-                            if typeof(config.Callback) == "function" then
-                                LoaderHandler.FrameCallbacks[frame] = config.Callback
-                            end
-                            if config.Properties then
-                                for childName, props in pairs(config.Properties) do
-                                    local child = frame:FindFirstChild(childName)
-                                    if child then
-                                        for prop, val in pairs(props) do
-                                            pcall(function() child[prop] = val end)
-                                        end
-                                    end
-                                end
-                            end
-                        end
-                    else
-                        -- incorrect: tween back to original color as subtle feedback
-                        TweenService:Create(keyBox, TweenInfo.new(0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundColor3 = orig}):Play()
-                        trying = false
-                    end
-                end)
-            end)
-        end
-
-        if last then
-            last.Completed:Once(function()
-                revealKey()
-            end)
-        else
-            revealKey()
-        end
+        end)
     end)
 end
 
