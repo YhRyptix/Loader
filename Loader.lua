@@ -269,6 +269,21 @@ loadingWindow.BorderSizePixel = 0
 loadingWindow.Position = UDim2.new(0.5, 0, 0.5, 0)
 loadingWindow.Size = UDim2.new(0, 250, 0, 133)
 
+local KatsuraLogo = Instance.new("ImageLabel")
+KatsuraLogo.Name = "KatsuraLogo"
+KatsuraLogo.Parent = loadingWindow
+KatsuraLogo.AnchorPoint = Vector2.new(0.5, 0.5)
+KatsuraLogo.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+KatsuraLogo.BackgroundTransparency = 1.000
+KatsuraLogo.BorderColor3 = Color3.fromRGB(0, 0, 0)
+KatsuraLogo.BorderSizePixel = 0
+KatsuraLogo.Position = UDim2.new(0.5, 0, 0.551929653, 0)
+KatsuraLogo.Size = UDim2.new(0, 250, 0, 100)
+KatsuraLogo.ScaleType = Enum.ScaleType.Fit
+KatsuraLogo.Image = "rbxasset://c3e70079e6726e02047645ca3190924e/katsuralogo.png"
+
+loadingWindow.Parent = katsuraLoading
+
 local TopLabels = Instance.new("Frame")
 TopLabels.Name = "TopLabels"
 TopLabels.Parent = loadingWindow
