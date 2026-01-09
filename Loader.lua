@@ -1,4 +1,3 @@
-local LPH_OBFUSCATED = false
 if not LPH_OBFUSCATED then
     LPH_JIT = function(...) return ... end
     LPH_JIT_MAX = LPH_JIT
@@ -10,7 +9,7 @@ if not LPH_OBFUSCATED then
     end
     LPH_ENCSTR = LPH_JIT; 
     LPH_ENCNUM = LPH_JIT;
-    LPH_CRASH = function() return print(debug.traceback()) end
+    LPH_CRASH = function() return Log(debug.traceback()) end
 
     LRM_SecondsLeft = "-1";
     LRM_ScriptVersion = "1.0.1"
@@ -35,7 +34,8 @@ if not LPH_OBFUSCATED then
     end
     LPH_STRENC = LPH_ENCSTR
     
-    LPH_ENCFUNC = function(toEncrypt, encKey, ...)
+    LPH_ENCFUNC = function(toEncrypt, encKey, decKey, ...)
+        -- not checking decKey value since this shim is meant to be used without obfuscation/whitelisting
         assert(type(toEncrypt) == "function" and type(encKey) == "string" and #{...} == 0, "LPH_ENCFUNC accepts a constant function, constant string, and string variable as arguments.")
         return toEncrypt
     end
@@ -67,7 +67,7 @@ if not game:IsLoaded() then
     game.Loaded:Wait()
 end
 
-_G.KatsuraUIConfig = {
+getgenv().KatsuraUIConfig = {
     LibraryName = "Katsura Loader",
     Theme = {
         PrimaryBG = Color3.fromRGB(31, 33, 41),       -- main window / background
@@ -116,7 +116,7 @@ _G.KatsuraUIConfig = {
 }
 local KatsuraFolder = Instance.new("Folder")
 KatsuraFolder.Name = "KatsuraFolder"
-KatsuraFolder.Parent = game:GetService("CoreGui")
+KatsuraFolder.Parent = game.CoreGui
 
 local katsuraMs = Instance.new("ModuleScript")
 katsuraMs.Name = "Katsura"
@@ -129,7 +129,7 @@ katsuraGui.Parent = katsuraMs
 
 local main = Instance.new("Frame")
 main.Name = "Main"
-main.BackgroundColor3 = _G.KatsuraUIConfig.Theme.PrimaryBG
+main.BackgroundColor3 = KatsuraUIConfig.Theme.PrimaryBG
 main.BorderColor3 = Color3.fromRGB(0, 0, 0)
 main.BorderSizePixel = 0
 main.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -146,7 +146,7 @@ topLabels.Size = UDim2.fromOffset(358, 34)
 
 local purpleLine = Instance.new("Frame")
 purpleLine.Name = "PurpleLine"
-purpleLine.BackgroundColor3 = _G.KatsuraUIConfig.Theme.Accent
+purpleLine.BackgroundColor3 = KatsuraUIConfig.Theme.Accent
 purpleLine.BorderColor3 = Color3.fromRGB(0, 0, 0)
 purpleLine.BorderSizePixel = 0
 purpleLine.Position = UDim2.fromScale(0, 0.924)
@@ -174,10 +174,10 @@ local katsuraLabel = Instance.new("TextLabel")
 katsuraLabel.Name = "KatsuraLabel"
 katsuraLabel.FontFace = Font.new("rbxasset://fonts/families/Ubuntu.json")
 katsuraLabel.Text = KatsuraUIConfig.LibraryName
-katsuraLabel.TextColor3 = _G.KatsuraUIConfig.Theme.Text
+katsuraLabel.TextColor3 = KatsuraUIConfig.Theme.Text
 katsuraLabel.TextSize = 15
 katsuraLabel.TextWrapped = true
-katsuraLabel.BackgroundColor3 = _G.KatsuraUIConfig.Theme.Accent
+katsuraLabel.BackgroundColor3 = KatsuraUIConfig.Theme.Accent
 katsuraLabel.BackgroundTransparency = 1
 katsuraLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
 katsuraLabel.BorderSizePixel = 0
@@ -189,7 +189,7 @@ topLabels.Parent = main
 
 local loadFrame = Instance.new("Frame")
 loadFrame.Name = "LoadFrame"
-loadFrame.BackgroundColor3 = _G.KatsuraUIConfig.Theme.PrimaryBG
+loadFrame.BackgroundColor3 = KatsuraUIConfig.Theme.PrimaryBG
 loadFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
 loadFrame.BorderSizePixel = 0
 loadFrame.Position = UDim2.fromScale(0.0198, 0.88)
@@ -197,80 +197,172 @@ loadFrame.Size = UDim2.fromOffset(344, 26)
 
 local uIStroke = Instance.new("UIStroke")
 uIStroke.Name = "UIStroke"
-uIStroke.Color = _G.KatsuraUIConfig.Theme.Stroke
+uIStroke.Color = KatsuraUIConfig.Theme.Stroke
 uIStroke.LineJoinMode = Enum.LineJoinMode.Miter
 uIStroke.Parent = loadFrame
 
     -- Key GUI: TopLabels (no BackgroundLoadBar or LoadingLine)
-    -- Use unique variable names to avoid redefinition
-    local keyTopLabels = Instance.new("Frame")
-    keyTopLabels.Name = "TopLabels"
-    keyTopLabels.Parent = kw_LoadingWindow
-    keyTopLabels.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
-    keyTopLabels.BorderColor3 = Color3.fromRGB(0, 0, 0)
-    keyTopLabels.BorderSizePixel = 0
-    keyTopLabels.Position = UDim2.new(0, 0, -0.0135716032, 0)
-    keyTopLabels.Size = UDim2.new(0, 250, 0, 70)
+    local kw_TopLabels = Instance.new("Frame")
+    kw_TopLabels.Name = "TopLabels"
+    kw_TopLabels.Parent = kw_LoadingWindow
+    kw_TopLabels.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
+    kw_TopLabels.BorderColor3 = Color3.fromRGB(0, 0, 0)
+    kw_TopLabels.BorderSizePixel = 0
+    kw_TopLabels.Position = UDim2.new(0, 0, -0.0135716032, 0)
+    kw_TopLabels.Size = UDim2.new(0, 250, 0, 70)
 
-    local keyClose = Instance.new("ImageLabel")
-    keyClose.Name = "Close"
-    keyClose.Parent = keyTopLabels
-    keyClose.AnchorPoint = Vector2.new(0.5, 0.5)
-    keyClose.BackgroundColor3 = Color3.fromRGB(31, 33, 41)
-    keyClose.BackgroundTransparency = 1.000
-    keyClose.BorderColor3 = Color3.fromRGB(0, 0, 0)
-    keyClose.BorderSizePixel = 0
-    keyClose.Position = UDim2.new(0.879999995, 0, 0.222000003, 0)
-    keyClose.Size = UDim2.new(0, 15, 0, 24)
-    keyClose.Image = "rbxassetid://8445470984"
-    keyClose.ImageColor3 = Color3.fromRGB(141, 141, 141)
-    keyClose.ImageRectOffset = Vector2.new(304, 304)
-    keyClose.ImageRectSize = Vector2.new(96, 96)
-    local keyCloseAspect = Instance.new("UIAspectRatioConstraint")
-    keyCloseAspect.Parent = keyClose
-    keyCloseAspect.DominantAxis = Enum.DominantAxis.Height
+    local kw_Close = Instance.new("ImageLabel")
+    kw_Close.Name = "Close"
+    kw_Close.Parent = kw_TopLabels
+    kw_Close.AnchorPoint = Vector2.new(0.5, 0.5)
+    kw_Close.BackgroundColor3 = Color3.fromRGB(31, 33, 41)
+    kw_Close.BackgroundTransparency = 1.000
+    kw_Close.BorderColor3 = Color3.fromRGB(0, 0, 0)
+    kw_Close.BorderSizePixel = 0
+    kw_Close.Position = UDim2.new(0.879999995, 0, 0.222000003, 0)
+    kw_Close.Size = UDim2.new(0, 15, 0, 24)
+    kw_Close.Image = "rbxassetid://8445470984"
+    kw_Close.ImageColor3 = Color3.fromRGB(141, 141, 141)
+    kw_Close.ImageRectOffset = Vector2.new(304, 304)
+    kw_Close.ImageRectSize = Vector2.new(96, 96)
+    local kw_CloseAspect = Instance.new("UIAspectRatioConstraint")
+    kw_CloseAspect.Parent = kw_Close
+    kw_CloseAspect.DominantAxis = Enum.DominantAxis.Height
 
-    local keyInputFrame = Instance.new("Frame")
-    keyInputFrame.Name = "KeyInputFrame"
-    keyInputFrame.Parent = keyTopLabels
-    keyInputFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
-    keyInputFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
-    keyInputFrame.BorderSizePixel = 0
-    keyInputFrame.Position = UDim2.new(0.0270000007, 0, 0.400000006, 0)
-    keyInputFrame.Size = UDim2.new(0, 223, 0, 30)
+    local KeyInputFrame = Instance.new("Frame")
+    KeyInputFrame.Name = "KeyInputFrame"
+    KeyInputFrame.Parent = kw_TopLabels
+    KeyInputFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
+    KeyInputFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
+    KeyInputFrame.BorderSizePixel = 0
+    KeyInputFrame.Position = UDim2.new(0.0270000007, 0, 0.400000006, 0)
+    KeyInputFrame.Size = UDim2.new(0, 223, 0, 30)
 
-    local keyInputBox = Instance.new("TextBox")
-    keyInputBox.Name = "KeyInputBox"
-    keyInputBox.Parent = keyInputFrame
-    keyInputBox.BackgroundColor3 = Color3.fromRGB(31, 33, 41)
-    keyInputBox.BorderColor3 = Color3.fromRGB(158, 150, 222)
-    keyInputBox.Position = UDim2.new(0, 0, 0.200000003, 0)
-    keyInputBox.Size = UDim2.new(1.05381179, 0, 0.600000024, 0)
-    keyInputBox.ClearTextOnFocus = false
-    keyInputBox.Font = Enum.Font.Ubuntu
-    keyInputBox.PlaceholderColor3 = Color3.fromRGB(120, 120, 125)
-    keyInputBox.PlaceholderText = "Enter your key here..."
-    keyInputBox.Text = ""
-    keyInputBox.TextColor3 = Color3.fromRGB(190, 190, 195)
-    keyInputBox.TextSize = 12.000
+    local KeyInputBox = Instance.new("TextBox")
+    KeyInputBox.Name = "KeyInputBox"
+    KeyInputBox.Parent = KeyInputFrame
+    KeyInputBox.BackgroundColor3 = Color3.fromRGB(31, 33, 41)
+    KeyInputBox.BorderColor3 = Color3.fromRGB(158, 150, 222)
+    KeyInputBox.Position = UDim2.new(0, 0, 0.200000003, 0)
+    KeyInputBox.Size = UDim2.new(1.05381179, 0, 0.600000024, 0)
+    KeyInputBox.ClearTextOnFocus = false
+    KeyInputBox.Font = Enum.Font.Ubuntu
+    KeyInputBox.PlaceholderColor3 = Color3.fromRGB(120, 120, 125)
+    KeyInputBox.PlaceholderText = "Enter your key here..."
+    KeyInputBox.Text = ""
+    KeyInputBox.TextColor3 = Color3.fromRGB(190, 190, 195)
+    KeyInputBox.TextSize = 12.000
 
-    local keyTextLabel = Instance.new("TextLabel")
-    keyTextLabel.Parent = keyTopLabels
-    keyTextLabel.BackgroundColor3 = Color3.fromRGB(31, 33, 41)
-    keyTextLabel.BackgroundTransparency = 1.000
-    keyTextLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
-    keyTextLabel.BorderSizePixel = 0
-    keyTextLabel.Position = UDim2.new(0.0270000007, 0, 0, 0)
-    keyTextLabel.Size = UDim2.new(0, 120, 0, 27)
-    keyTextLabel.Font = Enum.Font.Ubuntu
-    keyTextLabel.Text = "Katsura"
-    keyTextLabel.TextColor3 = Color3.fromRGB(190, 190, 195)
-    keyTextLabel.TextSize = 14.000
-    keyTextLabel.TextXAlignment = Enum.TextXAlignment.Left
+    local kw_TextLabel = Instance.new("TextLabel")
+    kw_TextLabel.Parent = kw_TopLabels
+    kw_TextLabel.BackgroundColor3 = Color3.fromRGB(31, 33, 41)
+    kw_TextLabel.BackgroundTransparency = 1.000
+    kw_TextLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
+    kw_TextLabel.BorderSizePixel = 0
+    kw_TextLabel.Position = UDim2.new(0.0270000007, 0, 0, 0)
+    kw_TextLabel.Size = UDim2.new(0, 120, 0, 27)
+    kw_TextLabel.Font = Enum.Font.Ubuntu
+    kw_TextLabel.Text = "Katsura"
+    kw_TextLabel.TextColor3 = Color3.fromRGB(190, 190, 195)
+    kw_TextLabel.TextSize = 14.000
+    kw_TextLabel.TextXAlignment = Enum.TextXAlignment.Left
 
     -- No BackgroundLoadBar or LoadingLine in KeyLoadingGui
+loadingWindow.Size = UDim2.new(0, 250, 0, 133)
 
--- Removed duplicate/redefined local KatsuraLogo and related objects.
+local KatsuraLogo = Instance.new("ImageLabel")
+KatsuraLogo.Name = "KatsuraLogo"
+KatsuraLogo.Parent = loadingWindow
+KatsuraLogo.AnchorPoint = Vector2.new(0.5, 0.5)
+KatsuraLogo.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+KatsuraLogo.BackgroundTransparency = 1.000
+KatsuraLogo.BorderColor3 = Color3.fromRGB(0, 0, 0)
+KatsuraLogo.BorderSizePixel = 0
+KatsuraLogo.Position = UDim2.new(0.5, 0, 0.551929653, 0)
+KatsuraLogo.Size = UDim2.new(0, 250, 0, 100)
+KatsuraLogo.ScaleType = Enum.ScaleType.Fit
+KatsuraLogo.Image = KatsuraUIConfig.Logos.KatsuraLoadingLogo
+
+loadingWindow.Parent = katsuraLoading
+
+local TopLabels = Instance.new("Frame")
+TopLabels.Name = "TopLabels"
+TopLabels.Parent = loadingWindow
+TopLabels.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
+TopLabels.BorderColor3 = Color3.fromRGB(0, 0, 0)
+TopLabels.BorderSizePixel = 0
+TopLabels.Position = UDim2.new(0, 0, 0.0149999997, 0)
+TopLabels.Size = UDim2.new(0, 250, 0, 27)
+
+local TextLabel = Instance.new("TextLabel")
+TextLabel.Parent = TopLabels
+TextLabel.BackgroundColor3 = Color3.fromRGB(31, 33, 41)
+TextLabel.BackgroundTransparency = 1.000
+TextLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
+TextLabel.BorderSizePixel = 0
+TextLabel.Position = UDim2.new(0.0280009769, 0, -0.0500000007, 0)
+TextLabel.Size = UDim2.new(0, 96, 0, 27)
+TextLabel.Font = Enum.Font.Ubuntu
+TextLabel.Text = "Katsura Loader"
+TextLabel.TextColor3 = Color3.fromRGB(190, 190, 195)
+TextLabel.TextSize = 14.000
+TextLabel.TextWrapped = true
+
+local Close = Instance.new("ImageLabel")
+Close.Name = "Close"
+Close.Parent = TopLabels
+Close.BackgroundColor3 = Color3.fromRGB(74, 74, 75)
+Close.BackgroundTransparency = 1.000
+Close.Position = UDim2.new(0.879999995, 0, 0.222000003, 0)
+Close.Size = UDim2.new(0, 15, 0, 24)
+Close.Image = "rbxassetid://8445470984"
+Close.ImageColor3 = Color3.fromRGB(141, 141, 141)
+Close.ImageRectOffset = Vector2.new(304, 304)
+Close.ImageRectSize = Vector2.new(96, 96)
+
+local UIAspectRatioConstraint = Instance.new("UIAspectRatioConstraint")
+UIAspectRatioConstraint.Parent = Close
+UIAspectRatioConstraint.DominantAxis = Enum.DominantAxis.Height
+
+local PurpleLine = Instance.new("Frame")
+PurpleLine.Name = "PurpleLine"
+PurpleLine.Parent = TopLabels
+PurpleLine.BackgroundColor3 = Color3.fromRGB(158, 150, 222)
+PurpleLine.BorderColor3 = Color3.fromRGB(0, 0, 0)
+PurpleLine.BorderSizePixel = 0
+PurpleLine.Position = UDim2.new(0, 0, 0.924000025, 0)
+PurpleLine.Size = UDim2.new(0, 250, 0, 2)
+
+local BackgroundLoadBar = Instance.new("Frame")
+BackgroundLoadBar.Name = "BackgroundLoadBar"
+BackgroundLoadBar.Parent = TopLabels
+BackgroundLoadBar.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
+BackgroundLoadBar.BorderColor3 = Color3.fromRGB(0, 0, 0)
+BackgroundLoadBar.BorderSizePixel = 0
+BackgroundLoadBar.Position = UDim2.new(0.122000001, 0, 4.3, 0)
+BackgroundLoadBar.Size = UDim2.new(0, 189, 0, 3)
+
+local LoadingLine = Instance.new("Frame")
+LoadingLine.Name = "LoadingLine"
+LoadingLine.Parent = BackgroundLoadBar
+LoadingLine.BackgroundColor3 = Color3.fromRGB(158, 150, 222)
+LoadingLine.BorderColor3 = Color3.fromRGB(0, 0, 0)
+LoadingLine.BorderSizePixel = 0
+LoadingLine.Position = UDim2.new(-0.00306000002, 0, 0, 0)
+LoadingLine.Size = UDim2.new(0.958362997, 0, 1, 0)
+
+local KatsuraLogo = Instance.new("ImageLabel")
+KatsuraLogo.Name = "KatsuraLogo"
+KatsuraLogo.Parent = loadingWindow
+KatsuraLogo.AnchorPoint = Vector2.new(0.5, 0.5)
+KatsuraLogo.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+KatsuraLogo.BackgroundTransparency = 1.000
+KatsuraLogo.BorderColor3 = Color3.fromRGB(0, 0, 0)
+KatsuraLogo.BorderSizePixel = 0
+KatsuraLogo.Position = UDim2.new(0.5, 0, 0.551929653, 0)
+KatsuraLogo.Size = UDim2.new(0, 250, 0, 100)
+KatsuraLogo.ScaleType = Enum.ScaleType.Fit
+KatsuraLogo.Image = KatsuraUIConfig.Logos.KatsuraLoadingLogo
 
 
 local gameFrame = Instance.new("Frame")
@@ -358,23 +450,24 @@ subTime.Parent = gameFrame
 
 local LoaderHandler = {
     Katsura = katsuraGui,
-    KatsuraLoading = nil, -- will be set later
+    KatsuraLoading = katsuraLoading,
     GameFrame = gameFrame,
-    LoadButton = nil, -- will be set later
+    LoadButton = LoadButton,
     CloseButton = close,
     FramesUrl = {}
+
 }
 local Katsura = {}
 getgenv().ActiveFrame = nil
 local activeTargets = nil
-local UserInputService = game:GetService("UserInputService")
-local RunService = game:GetService("RunService")
-local TweenService = game:GetService("TweenService")
-local Players = game:GetService("Players")
--- Removed unused LocalPlayer
+local UserInputService = cloneref(game:GetService("UserInputService"))
+local RunService = cloneref(game:GetService("RunService"))
+local TweenService = cloneref(game:GetService("TweenService"))
+local Players = cloneref(game:GetService("Players"))
+local LocalPlayer = Players.LocalPlayer
 local TWEEN_TIME = 0.2
-if LoaderHandler.KatsuraLoading then LoaderHandler.KatsuraLoading.Enabled = false end
-if LoaderHandler.Katsura then LoaderHandler.Katsura.Enabled = false end
+LoaderHandler.KatsuraLoading.Enabled = false
+LoaderHandler.Katsura.Enabled = false
 
 local EnterColor = {
     GameFrame = {
@@ -455,24 +548,24 @@ function Katsura.applyStyle(styleTable, targets)
         end
     end
 end
-function Katsura.ApplyHoverEffect(frame)
+function Katsura.ApplyHoverEffect(gameFrame)
     local targets = {
-        GameFrame = frame,
-        SubTime = frame:FindFirstChild("SubTime"),
-        UpdateStatus = frame:FindFirstChild("UpdateStatus"),
-        GameName = frame:FindFirstChild("GameName"),
-        Image = frame:FindFirstChildWhichIsA("ImageLabel")
+        GameFrame = gameFrame,
+        SubTime = gameFrame:FindFirstChild("SubTime"),
+        UpdateStatus = gameFrame:FindFirstChild("UpdateStatus"),
+        GameName = gameFrame:FindFirstChild("GameName"),
+        Image = gameFrame:FindFirstChildWhichIsA("ImageLabel")
     }
 
     if not targets.GameFrame then return end
 
-    frame.InputBegan:Connect(function(input)
+    gameFrame.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            if getgenv().ActiveFrame and getgenv().ActiveFrame ~= frame then
+            if getgenv().ActiveFrame and getgenv().ActiveFrame ~= gameFrame then
                 Katsura.applyStyle(LeaveColor, activeTargets)
             end
-            Katsura.applyStyle(EnterColor, targets)
-            getgenv().ActiveFrame = frame
+                Katsura.applyStyle(EnterColor, targets)
+            getgenv().ActiveFrame = gameFrame
             activeTargets = targets
         end
     end)
@@ -495,7 +588,7 @@ end
 function Katsura.CloseGuiEffect(screenGui)
     if not screenGui or not screenGui:IsA("ScreenGui") then return end
 
-    -- Use global TweenService
+    local TweenService = game:GetService("TweenService")
     local tweenInfo = TweenInfo.new(0.6, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut)
     local lastTween = nil
 
@@ -534,7 +627,7 @@ function Katsura.CloseGuiEffect(screenGui)
     end
 end
 
-function Katsura.LoadingEffect(duration, player, frameConfigs, mainTemplate, gameFrameTemplate)
+function Katsura.LoadingEffect(duration, player, frameConfigs, mainTemplate, gameFrameTemplate, callback)
     if not player or not player:IsA("Player") then return end
     if not mainTemplate or not gameFrameTemplate then
         warn("Missing main UI or GameFrame template")
@@ -546,9 +639,8 @@ function Katsura.LoadingEffect(duration, player, frameConfigs, mainTemplate, gam
 
     local loadingTemplate = LoaderHandler.KatsuraLoading
     if not loadingTemplate then
-        loadingTemplate = Instance.new("ScreenGui")
-        loadingTemplate.Name = "KatsuraLoading"
-        LoaderHandler.KatsuraLoading = loadingTemplate
+        warn("Missing KatsuraLoading GUI")
+        return
     end
 
     local clonedLoadingUI = loadingTemplate:Clone()
@@ -583,8 +675,8 @@ function Katsura.LoadingEffect(duration, player, frameConfigs, mainTemplate, gam
 
     loadingWindow.Size = UDim2.new(0, 250, 0, 133)
 
-    local backgroundFrame = loadingWindow:FindFirstChild("TopLabels") and loadingWindow.TopLabels:FindFirstChild("BackgroundLoadBar")
-    Katsura.MakeDraggable(loadingWindow)
+    local backgroundFrame = loadingWindow.TopLabels:FindFirstChild("BackgroundLoadBar")
+        Katsura.MakeDraggable(loadingWindow)
 
     local loadingLine = backgroundFrame and backgroundFrame:FindFirstChild("LoadingLine")
     if not backgroundFrame or not loadingLine then return end
@@ -609,7 +701,7 @@ function Katsura.LoadingEffect(duration, player, frameConfigs, mainTemplate, gam
                 end
             end
 
-            local newUI = mainTemplate:Clone()
+            getgenv().newUI = mainTemplate:Clone()
             newUI.Parent = player:WaitForChild("PlayerGui")
             newUI.Enabled = true
 
@@ -621,7 +713,7 @@ function Katsura.LoadingEffect(duration, player, frameConfigs, mainTemplate, gam
 
             Katsura.MakeDraggable(newUI.Main)
             local Load = newUI.Main.LoadFrame.Load
-            local CloseBtn = newUI.Main.TopLabels.Close
+            local Close = newUI.Main.TopLabels.Close
 
             Katsura.ApplyHoverEffectToAny(Load, {
                 Load = { TextColor3 = "205, 206, 212", TextTransparency = 0 }
@@ -648,13 +740,13 @@ function Katsura.LoadingEffect(duration, player, frameConfigs, mainTemplate, gam
                 end
             end)
 
-            Katsura.ApplyHoverEffectToAny(CloseBtn, {
+            Katsura.ApplyHoverEffectToAny(Close, {
                 Close = { TextColor3 = "205, 206, 212", TextTransparency = 0 }
             }, {
                 Close = { TextColor3 = "190, 190, 190", TextTransparency = 0.6 }
             })
 
-            CloseBtn.InputBegan:Connect(function(input)
+            Close.InputBegan:Connect(function(input)
                 if input.UserInputType == Enum.UserInputType.MouseButton1 then
                     Katsura.CloseGuiEffect(newUI)
                 end
@@ -818,9 +910,9 @@ function Katsura.LoadingEffect(duration, player, frameConfigs, mainTemplate, gam
 
         -- no loading bar animation here; user enters key directly
 
-        keyInputBox.FocusLost:Connect(function(enterPressed)
+        KeyInputBox.FocusLost:Connect(function(enterPressed)
             if not enterPressed then return end
-            local inputKey = keyInputBox.Text
+            local inputKey = KeyInputBox.Text
             if isKeyCorrect(inputKey) then
                 showSuccess()
             else
@@ -829,7 +921,7 @@ function Katsura.LoadingEffect(duration, player, frameConfigs, mainTemplate, gam
         end)
 
         -- close button
-        keyClose.InputBegan:Connect(function(input)
+        kw_Close.InputBegan:Connect(function(input)
             if input.UserInputType == Enum.UserInputType.MouseButton1 then
                 keyGui:Destroy()
             end
@@ -884,6 +976,8 @@ function Katsura.MakeDraggable(guiObject)
 end
 
 -- Add tweening to KeyLoadingGui elements for smoother transitions
+local TweenService = game:GetService("TweenService")
+
 local function tweenElement(element, properties, duration)
     if not element or not properties then return end
     local tweenInfo = TweenInfo.new(duration or 0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
@@ -892,7 +986,33 @@ local function tweenElement(element, properties, duration)
 end
 
 -- Example: Tweening the KeyInputBox when it gains focus
--- These should be inside the function that creates the key GUI, using the correct variable names.
+KeyInputBox.Focused:Connect(function()
+    tweenElement(KeyInputBox, {BorderColor3 = Color3.fromRGB(100, 255, 100)}, 0.3)
+end)
+
+KeyInputBox.FocusLost:Connect(function(enterPressed)
+    if not enterPressed then
+        tweenElement(KeyInputBox, {BorderColor3 = Color3.fromRGB(158, 150, 222)}, 0.3)
+    end
+end)
+
+-- Tweening the Close button hover effect
+kw_Close.MouseEnter:Connect(function()
+    tweenElement(kw_Close, {ImageColor3 = Color3.fromRGB(205, 205, 205)}, 0.3)
+end)
+
+kw_Close.MouseLeave:Connect(function()
+    tweenElement(kw_Close, {ImageColor3 = Color3.fromRGB(141, 141, 141)}, 0.3)
+end)
+
+-- Tweening the KeyInputFrame appearance
+KeyInputFrame.MouseEnter:Connect(function()
+    tweenElement(KeyInputFrame, {BackgroundColor3 = Color3.fromRGB(35, 35, 40)}, 0.3)
+end)
+
+KeyInputFrame.MouseLeave:Connect(function()
+    tweenElement(KeyInputFrame, {BackgroundColor3 = Color3.fromRGB(25, 25, 30)}, 0.3)
+end)
 
 -- Add debugging logs to trace Katsura loader initialization
 print("Initializing Katsura loader...")
@@ -903,18 +1023,14 @@ end
 if not LoaderHandler.Katsura then
     warn("LoaderHandler.Katsura is nil.")
 end
-
+if not LoaderHandler.GameFrame then
     warn("LoaderHandler.GameFrame is nil.")
+end
 if not LoaderHandler.LoadButton then
     warn("LoaderHandler.LoadButton is nil.")
 end
-
 if not LoaderHandler.CloseButton then
     warn("LoaderHandler.CloseButton is nil.")
-end
-
-if not LoaderHandler.GameFrame then
-    warn("LoaderHandler.GameFrame is nil.")
 end
 
 if not Katsura or type(Katsura.LoadingEffect) ~= "function" then
@@ -923,4 +1039,4 @@ else
     print("Katsura loader initialized successfully.")
 end
 
-return Katsura, LoaderHandler.Katsura, LoaderHandler.GameFrame
+return Katsura,LoaderHandler.Katsura, LoaderHandler.GameFrame
