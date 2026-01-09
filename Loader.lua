@@ -816,9 +816,12 @@ function Katsura.LoadingEffect(duration, player, frameConfigs, mainTemplate, gam
         kw_Close.BorderColor3 = Color3.fromRGB(0, 0, 0)
         kw_Close.BorderSizePixel = 0
         kw_Close.Position = UDim2.new(0.879999995, 0, 0.222000003, 0)
-        kw_Close.Size = UDim2.new(0, 20, 0, 20)
-        kw_Close.Image = "rbxasset://c3e70079e6726e02047645ca3190924e/close.png"
-        kw_Close.ImageColor3 = Color3.fromRGB(190, 190, 195)
+        kw_Close.Size = UDim2.new(0, 15, 0, 24)
+        kw_Close.Image = "rbxassetid://8445470984"
+        kw_Close.ImageColor3 = Color3.fromRGB(141, 141, 141)
+        local kw_CloseAspect = Instance.new("UIAspectRatioConstraint")
+        kw_CloseAspect.Parent = kw_Close
+        kw_CloseAspect.DominantAxis = Enum.DominantAxis.Height
 
         local KeyInputFrame = Instance.new("Frame")
         KeyInputFrame.Name = "KeyInputFrame"
@@ -858,23 +861,7 @@ function Katsura.LoadingEffect(duration, player, frameConfigs, mainTemplate, gam
         kw_TextLabel.TextSize = 14.000
         kw_TextLabel.TextXAlignment = Enum.TextXAlignment.Left
 
-        local kw_BackgroundLoadBar = Instance.new("Frame")
-        kw_BackgroundLoadBar.Name = "BackgroundLoadBar"
-        kw_BackgroundLoadBar.Parent = kw_TopLabels
-        kw_BackgroundLoadBar.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
-        kw_BackgroundLoadBar.BorderColor3 = Color3.fromRGB(0, 0, 0)
-        kw_BackgroundLoadBar.BorderSizePixel = 0
-        kw_BackgroundLoadBar.Position = UDim2.new(0.122000001, 0, 4.5, 0)
-        kw_BackgroundLoadBar.Size = UDim2.new(0, 189, 0, 3)
-
-        local kw_LoadingLine = Instance.new("Frame")
-        kw_LoadingLine.Name = "LoadingLine"
-        kw_LoadingLine.Parent = kw_BackgroundLoadBar
-        kw_LoadingLine.BackgroundColor3 = Color3.fromRGB(158, 150, 222)
-        kw_LoadingLine.BorderColor3 = Color3.fromRGB(0, 0, 0)
-        kw_LoadingLine.BorderSizePixel = 0
-        kw_LoadingLine.Position = UDim2.new(-0.00306000002, 0, 0, 0)
-        kw_LoadingLine.Size = UDim2.new(0.958362997, 0, 1, 0)
+        -- removed key-GUI loading bar (not needed; initial loading already ran)
 
         -- Key validation and interactions
         local CORRECT_KEY = "KATSURA-2024-ACCESS-GRANTED"
@@ -893,13 +880,7 @@ function Katsura.LoadingEffect(duration, player, frameConfigs, mainTemplate, gam
             KeyInputBox.BorderColor3 = Color3.fromRGB(100, 255, 100)
             KeyInputBox.Text = "Access Granted!"
             KeyInputBox.TextColor3 = Color3.fromRGB(100, 255, 100)
-            local successTween = TweenService:Create(
-                kw_LoadingLine,
-                TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-                {Size = UDim2.new(1, 0, 1, 0)}
-            )
-            successTween:Play()
-            task.wait(1)
+            task.wait(0.6)
             keyGui:Destroy()
             showMainUI()
         end
@@ -908,14 +889,7 @@ function Katsura.LoadingEffect(duration, player, frameConfigs, mainTemplate, gam
             return inputKey == CORRECT_KEY
         end
 
-        -- animate initial key GUI loading bar (optional)
-        kw_LoadingLine.Size = UDim2.new(0, 0, 1, 0)
-        local animTween = TweenService:Create(
-            kw_LoadingLine,
-            TweenInfo.new(2.5, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut),
-            {Size = UDim2.new(0.958363, 0, 1, 0)}
-        )
-        animTween:Play()
+        -- no loading bar animation here; user enters key directly
 
         KeyInputBox.FocusLost:Connect(function(enterPressed)
             if not enterPressed then return end
