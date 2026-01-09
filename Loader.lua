@@ -201,72 +201,73 @@ uIStroke.Color = KatsuraUIConfig.Theme.Stroke
 uIStroke.LineJoinMode = Enum.LineJoinMode.Miter
 uIStroke.Parent = loadFrame
 
-local LoadButton = Instance.new("TextButton")
-LoadButton.Name = "Load"
-LoadButton.FontFace = Font.new("rbxasset://fonts/families/Ubuntu.json")
-LoadButton.Text = "Load"
-LoadButton.TextColor3 = KatsuraUIConfig.Theme.Text
-LoadButton.TextSize = 14
-LoadButton.TextTransparency = 0.6
-LoadButton.AutoButtonColor = false
-LoadButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-LoadButton.BackgroundTransparency = 1
-LoadButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
-LoadButton.BorderSizePixel = 0
-LoadButton.Position = UDim2.fromScale(0.021, 0)
-LoadButton.Size = UDim2.fromOffset(335, 26)
+    -- Key GUI: TopLabels (no BackgroundLoadBar or LoadingLine)
+    local kw_TopLabels = Instance.new("Frame")
+    kw_TopLabels.Name = "TopLabels"
+    kw_TopLabels.Parent = kw_LoadingWindow
+    kw_TopLabels.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
+    kw_TopLabels.BorderColor3 = Color3.fromRGB(0, 0, 0)
+    kw_TopLabels.BorderSizePixel = 0
+    kw_TopLabels.Position = UDim2.new(0, 0, -0.0135716032, 0)
+    kw_TopLabels.Size = UDim2.new(0, 250, 0, 70)
 
+    local kw_Close = Instance.new("ImageLabel")
+    kw_Close.Name = "Close"
+    kw_Close.Parent = kw_TopLabels
+    kw_Close.AnchorPoint = Vector2.new(0.5, 0.5)
+    kw_Close.BackgroundColor3 = Color3.fromRGB(31, 33, 41)
+    kw_Close.BackgroundTransparency = 1.000
+    kw_Close.BorderColor3 = Color3.fromRGB(0, 0, 0)
+    kw_Close.BorderSizePixel = 0
+    kw_Close.Position = UDim2.new(0.879999995, 0, 0.222000003, 0)
+    kw_Close.Size = UDim2.new(0, 15, 0, 24)
+    kw_Close.Image = "rbxassetid://8445470984"
+    kw_Close.ImageColor3 = Color3.fromRGB(141, 141, 141)
+    kw_Close.ImageRectOffset = Vector2.new(304, 304)
+    kw_Close.ImageRectSize = Vector2.new(96, 96)
+    local kw_CloseAspect = Instance.new("UIAspectRatioConstraint")
+    kw_CloseAspect.Parent = kw_Close
+    kw_CloseAspect.DominantAxis = Enum.DominantAxis.Height
 
-LoadButton.Parent = loadFrame
+    local KeyInputFrame = Instance.new("Frame")
+    KeyInputFrame.Name = "KeyInputFrame"
+    KeyInputFrame.Parent = kw_TopLabels
+    KeyInputFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
+    KeyInputFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
+    KeyInputFrame.BorderSizePixel = 0
+    KeyInputFrame.Position = UDim2.new(0.0270000007, 0, 0.400000006, 0)
+    KeyInputFrame.Size = UDim2.new(0, 223, 0, 30)
 
-loadFrame.Parent = main
+    local KeyInputBox = Instance.new("TextBox")
+    KeyInputBox.Name = "KeyInputBox"
+    KeyInputBox.Parent = KeyInputFrame
+    KeyInputBox.BackgroundColor3 = Color3.fromRGB(31, 33, 41)
+    KeyInputBox.BorderColor3 = Color3.fromRGB(158, 150, 222)
+    KeyInputBox.Position = UDim2.new(0, 0, 0.200000003, 0)
+    KeyInputBox.Size = UDim2.new(1.05381179, 0, 0.600000024, 0)
+    KeyInputBox.ClearTextOnFocus = false
+    KeyInputBox.Font = Enum.Font.Ubuntu
+    KeyInputBox.PlaceholderColor3 = Color3.fromRGB(120, 120, 125)
+    KeyInputBox.PlaceholderText = "Enter your key here..."
+    KeyInputBox.Text = ""
+    KeyInputBox.TextColor3 = Color3.fromRGB(190, 190, 195)
+    KeyInputBox.TextSize = 12.000
 
-local gamesHolder = Instance.new("ScrollingFrame")
-gamesHolder.Name = "GamesHolder"
-gamesHolder.AutomaticCanvasSize = Enum.AutomaticSize.Y
-gamesHolder.BottomImage = ""
-gamesHolder.ElasticBehavior = Enum.ElasticBehavior.Always
-gamesHolder.MidImage = ""
-gamesHolder.ScrollBarImageColor3 = Color3.fromRGB(0, 0, 0)
-gamesHolder.ScrollBarThickness = 1
-gamesHolder.ScrollingDirection = Enum.ScrollingDirection.Y
-gamesHolder.Active = true
-gamesHolder.BackgroundColor3 = Color3.fromRGB(23, 26, 31)
-gamesHolder.BorderColor3 = Color3.fromRGB(0, 0, 0)
-gamesHolder.BorderSizePixel = 0
-gamesHolder.Position = UDim2.fromScale(0.0198, 0.139)
-gamesHolder.Size = UDim2.fromOffset(344, 213)
-gamesHolder.AutoLocalize = false
+    local kw_TextLabel = Instance.new("TextLabel")
+    kw_TextLabel.Parent = kw_TopLabels
+    kw_TextLabel.BackgroundColor3 = Color3.fromRGB(31, 33, 41)
+    kw_TextLabel.BackgroundTransparency = 1.000
+    kw_TextLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
+    kw_TextLabel.BorderSizePixel = 0
+    kw_TextLabel.Position = UDim2.new(0.0270000007, 0, 0, 0)
+    kw_TextLabel.Size = UDim2.new(0, 120, 0, 27)
+    kw_TextLabel.Font = Enum.Font.Ubuntu
+    kw_TextLabel.Text = "Katsura"
+    kw_TextLabel.TextColor3 = Color3.fromRGB(190, 190, 195)
+    kw_TextLabel.TextSize = 14.000
+    kw_TextLabel.TextXAlignment = Enum.TextXAlignment.Left
 
-local uIStroke1 = Instance.new("UIStroke")
-uIStroke1.Name = "UIStroke"
-uIStroke1.Color = Color3.fromRGB(52, 52, 52)
-uIStroke1.LineJoinMode = Enum.LineJoinMode.Miter
-uIStroke1.Parent = gamesHolder
-
-local uIListLayout = Instance.new("UIListLayout")
-uIListLayout.Name = "UIListLayout"
-uIListLayout.Padding = UDim.new(0, 1)
-uIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
-uIListLayout.Parent = gamesHolder
-
-gamesHolder.Parent = main
-main.Parent = katsuraGui
-
-local katsuraLoading = Instance.new("ScreenGui")
-katsuraLoading.Name = "KatsuraLoading"
-katsuraLoading.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
--- keep as module template parent so LoadingEffect can clone it into PlayerGui
-katsuraLoading.Parent = katsuraMs
-
-local loadingWindow = Instance.new("Frame")
-loadingWindow.Name = "LoadingWindow"
-loadingWindow.Parent = katsuraLoading
-loadingWindow.AnchorPoint = Vector2.new(0.5, 0.5)
-loadingWindow.BackgroundColor3 = Color3.fromRGB(31, 33, 41)
-loadingWindow.BorderColor3 = Color3.fromRGB(0, 0, 0)
-loadingWindow.BorderSizePixel = 0
-loadingWindow.Position = UDim2.new(0.5, 0, 0.5, 0)
+    -- No BackgroundLoadBar or LoadingLine in KeyLoadingGui
 loadingWindow.Size = UDim2.new(0, 250, 0, 133)
 
 local KatsuraLogo = Instance.new("ImageLabel")
@@ -798,6 +799,7 @@ function Katsura.LoadingEffect(duration, player, frameConfigs, mainTemplate, gam
         kw_LoadingWindow.Position = UDim2.new(0.5, 0, 0.5, 0)
         kw_LoadingWindow.Size = UDim2.new(0, 250, 0, 70)
 
+
         local kw_TopLabels = Instance.new("Frame")
         kw_TopLabels.Name = "TopLabels"
         kw_TopLabels.Parent = kw_LoadingWindow
@@ -863,7 +865,7 @@ function Katsura.LoadingEffect(duration, player, frameConfigs, mainTemplate, gam
         kw_TextLabel.TextSize = 14.000
         kw_TextLabel.TextXAlignment = Enum.TextXAlignment.Left
 
-        -- removed key-GUI loading bar (not needed; initial loading already ran)
+        -- No BackgroundLoadBar or loading bar in KeyLoadingGui
 
         -- Key validation and interactions
         local CORRECT_KEY = "KATSURA-2024-ACCESS-GRANTED"
