@@ -1,855 +1,334 @@
-local LPH_OBFUSCATED = false
-if not LPH_OBFUSCATED then
-    LPH_JIT = function(...) return ... end
-    LPH_JIT_MAX = LPH_JIT
-    LPH_NO_VIRTUALIZE = LPH_JIT;
-    LPH_NO_UPVALUES = function(f) 
-        return function(...) 
-            return f(...)
-        end
-    end
-    LPH_ENCSTR = LPH_JIT; 
-    LPH_ENCNUM = LPH_JIT;
-    LPH_CRASH = function() return print(debug.traceback()) end
-
-    LRM_SecondsLeft = "-1";
-    LRM_ScriptVersion = "1.0.1"
-    LRM_UserNote = "You are so sigma";
-    LRM_LinkedDiscordID = "Nil";
-    LRM_TotalExecutions = 99;
-    LRM_IsUserPremium = true
-    Type = "[Developer]"
-    local assert = assert
-    local type = type
-    local setfenv = setfenv
-    
-    LPH_ENCNUM = function(toEncrypt, ...)
-        assert(type(toEncrypt) == "number" and #{...} == 0, "LPH_ENCNUM only accepts a single constant double or integer as an argument.")
-        return toEncrypt
-    end
-    LPH_NUMENC = LPH_ENCNUM
-    
-    LPH_ENCSTR = function(toEncrypt, ...)
-        assert(type(toEncrypt) == "string" and #{...} == 0, "LPH_ENCSTR only accepts a single constant string as an argument.")
-        return toEncrypt
-    end
-    LPH_STRENC = LPH_ENCSTR
-    
-    LPH_ENCFUNC = function(toEncrypt, encKey, ...)
-        assert(type(toEncrypt) == "function" and type(encKey) == "string" and #{...} == 0, "LPH_ENCFUNC accepts a constant function, constant string, and string variable as arguments.")
-        return toEncrypt
-    end
-    LPH_FUNCENC = LPH_ENCFUNC
-    
-    LPH_JIT = function(f, ...)
-        assert(type(f) == "function" and #{...} == 0, "LPH_JIT only accepts a single constant function as an argument.")
-        return f
-    end
-    LPH_JIT_MAX = LPH_JIT
-    
-    LPH_NO_VIRTUALIZE = function(f, ...)
-        assert(type(f) == "function" and #{...} == 0, "LPH_NO_VIRTUALIZE only accepts a single constant function as an argument.")
-        return f
-    end
-    
-    LPH_NO_UPVALUES = function(f, ...)
-        assert(type(setfenv) == "function", "LPH_NO_UPVALUES can only be used on Lua versions with getfenv & setfenv")
-        assert(type(f) == "function" and #{...} == 0, "LPH_NO_UPVALUES only accepts a single constant function as an argument.")
-        return f
-    end
-    
-    LPH_CRASH = function(...)
-        assert(#{...} == 0, "LPH_CRASH does not accept any arguments.")
-    end
-end;
-
-if not game:IsLoaded() then
-    game.Loaded:Wait()
-end
-
-_G.KatsuraUIConfig = {
-    LibraryName = "Katsura Loader",
-    Theme = {
-        PrimaryBG = Color3.fromRGB(31, 33, 41),       -- main window / background
-        SecondaryBG = Color3.fromRGB(25, 25, 30),     -- panels, cards, subframes
-        Accent = Color3.fromRGB(158, 150, 222),         -- highlights, buttons, important text
-        Text = Color3.fromRGB(190, 190, 195),         -- standard text
-        Stroke = Color3.fromRGB(40, 40, 45),          -- outlines, borders
-        IconTint = Color3.fromRGB(200, 50, 60)        -- logos, image tints
-    },
-    Logos = (function()
-        local rawUrl = "https://raw.githubusercontent.com/YhRyptix/Loader/main/d75af5bf-c12e-4753-9e85-76d367444a83.png"
-        local imagePath = "katsuralogo.png"
-        local fallback = "rbxassetid://0"
-
-        local asset = fallback
-
-        local ok_write = false
-        if type(isfile) == "function" and type(writefile) == "function" and type(game.HttpGet) == "function" then
-            if not isfile(imagePath) then
-                local ok, data = pcall(function()
-                    return game:HttpGet(rawUrl)
-                end)
-                if ok and data and #data > 0 then
-                    pcall(function() writefile(imagePath, data) end)
-                    ok_write = true
-                end
-            else
-                ok_write = true
-            end
-
-            if ok_write and type(getcustomasset) == "function" then
-                local ok2, res = pcall(function()
-                    return getcustomasset(imagePath)
-                end)
-                if ok2 and res then
-                    asset = res
-                end
-            end
-        end
-
-        return {
-            KatsuraLogo = asset,
-            KatsuraLoadingLogo = asset,
-        }
-    end)(),
-}
-local KatsuraFolder = Instance.new("Folder")
-KatsuraFolder.Name = "KatsuraFolder"
-KatsuraFolder.Parent = game:GetService("CoreGui")
-
-local katsuraMs = Instance.new("ModuleScript")
-katsuraMs.Name = "Katsura"
-katsuraMs.Parent = KatsuraFolder
-
-local katsuraGui = Instance.new("ScreenGui")
-katsuraGui.Name = "Katsura"
-katsuraGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-katsuraGui.Parent = katsuraMs
-
-local main = Instance.new("Frame")
-main.Name = "Main"
-main.BackgroundColor3 = _G.KatsuraUIConfig.Theme.PrimaryBG
-main.BorderColor3 = Color3.fromRGB(0, 0, 0)
-main.BorderSizePixel = 0
-main.AnchorPoint = Vector2.new(0.5, 0.5)
-main.Position = UDim2.fromScale(0.5, 0.5)
-main.Size = UDim2.fromOffset(358, 297)
-
-local topLabels = Instance.new("Frame")
-topLabels.Name = "TopLabels"
-topLabels.BackgroundColor3 = Color3.fromRGB(23, 26, 31)
-topLabels.BorderColor3 = Color3.fromRGB(0, 0, 0)
-topLabels.BorderSizePixel = 0
-topLabels.Position = UDim2.fromScale(0, -0.00213)
-topLabels.Size = UDim2.fromOffset(358, 34)
-
-local purpleLine = Instance.new("Frame")
-purpleLine.Name = "PurpleLine"
-purpleLine.BackgroundColor3 = _G.KatsuraUIConfig.Theme.Accent
-purpleLine.BorderColor3 = Color3.fromRGB(0, 0, 0)
-purpleLine.BorderSizePixel = 0
-purpleLine.Position = UDim2.fromScale(0, 0.924)
-purpleLine.Size = UDim2.fromOffset(358, 2)
-purpleLine.Parent = topLabels
-
-local close = Instance.new("TextButton")
-close.Name = "Close"
-close.FontFace = Font.new("rbxasset://fonts/families/Ubuntu.json")
-close.Text = "X"
-close.TextColor3 = Color3.fromRGB(190, 190, 190)
-close.TextSize = 14
-close.TextTransparency = 0.6
-close.AutoButtonColor = false
-close.BackgroundColor3 = Color3.fromRGB(74, 74, 75)
-close.BackgroundTransparency = 1
-close.BorderColor3 = Color3.fromRGB(0, 0, 0)
-close.BorderSizePixel = 0
-close.Position = UDim2.fromScale(0.908, 0.192)
-close.Size = UDim2.fromOffset(25, 18)
-
-close.Parent = topLabels
-
-local katsuraLabel = Instance.new("TextLabel")
-katsuraLabel.Name = "KatsuraLabel"
-katsuraLabel.FontFace = Font.new("rbxasset://fonts/families/Ubuntu.json")
-katsuraLabel.Text = KatsuraUIConfig.LibraryName
-katsuraLabel.TextColor3 = _G.KatsuraUIConfig.Theme.Text
-katsuraLabel.TextSize = 15
-katsuraLabel.TextWrapped = true
-katsuraLabel.BackgroundColor3 = _G.KatsuraUIConfig.Theme.Accent
-katsuraLabel.BackgroundTransparency = 1
-katsuraLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
-katsuraLabel.BorderSizePixel = 0
-katsuraLabel.Position = UDim2.fromScale(0.0198, 0.192)
-katsuraLabel.Size = UDim2.fromOffset(75, 18)
-katsuraLabel.Parent = topLabels
-
-topLabels.Parent = main
-
-local loadFrame = Instance.new("Frame")
-loadFrame.Name = "LoadFrame"
-loadFrame.BackgroundColor3 = _G.KatsuraUIConfig.Theme.PrimaryBG
-loadFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
-loadFrame.BorderSizePixel = 0
-loadFrame.Position = UDim2.fromScale(0.0198, 0.88)
-loadFrame.Size = UDim2.fromOffset(344, 26)
-
-local uIStroke = Instance.new("UIStroke")
-uIStroke.Name = "UIStroke"
-uIStroke.Color = _G.KatsuraUIConfig.Theme.Stroke
-uIStroke.LineJoinMode = Enum.LineJoinMode.Miter
-uIStroke.Parent = loadFrame
-
-    -- Key GUI: TopLabels (no BackgroundLoadBar or LoadingLine)
-    -- Use unique variable names to avoid redefinition
-    local keyTopLabels = Instance.new("Frame")
-    keyTopLabels.Name = "TopLabels"
-    keyTopLabels.Parent = kw_LoadingWindow
-    keyTopLabels.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
-    keyTopLabels.BorderColor3 = Color3.fromRGB(0, 0, 0)
-    keyTopLabels.BorderSizePixel = 0
-    keyTopLabels.Position = UDim2.new(0, 0, -0.0135716032, 0)
-    keyTopLabels.Size = UDim2.new(0, 250, 0, 70)
-
-    local keyClose = Instance.new("ImageLabel")
-    keyClose.Name = "Close"
-    keyClose.Parent = keyTopLabels
-    keyClose.AnchorPoint = Vector2.new(0.5, 0.5)
-    keyClose.BackgroundColor3 = Color3.fromRGB(31, 33, 41)
-    keyClose.BackgroundTransparency = 1.000
-    keyClose.BorderColor3 = Color3.fromRGB(0, 0, 0)
-    keyClose.BorderSizePixel = 0
-    keyClose.Position = UDim2.new(0.879999995, 0, 0.222000003, 0)
-    keyClose.Size = UDim2.new(0, 15, 0, 24)
-    keyClose.Image = "rbxassetid://8445470984"
-    keyClose.ImageColor3 = Color3.fromRGB(141, 141, 141)
-    keyClose.ImageRectOffset = Vector2.new(304, 304)
-    keyClose.ImageRectSize = Vector2.new(96, 96)
-    local keyCloseAspect = Instance.new("UIAspectRatioConstraint")
-    keyCloseAspect.Parent = keyClose
-    keyCloseAspect.DominantAxis = Enum.DominantAxis.Height
-
-    local keyInputFrame = Instance.new("Frame")
-    keyInputFrame.Name = "KeyInputFrame"
-    keyInputFrame.Parent = keyTopLabels
-    keyInputFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
-    keyInputFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
-    keyInputFrame.BorderSizePixel = 0
-    keyInputFrame.Position = UDim2.new(0.0270000007, 0, 0.400000006, 0)
-    keyInputFrame.Size = UDim2.new(0, 223, 0, 30)
-
-    local keyInputBox = Instance.new("TextBox")
-    keyInputBox.Name = "KeyInputBox"
-    keyInputBox.Parent = keyInputFrame
-    keyInputBox.BackgroundColor3 = Color3.fromRGB(31, 33, 41)
-    keyInputBox.BorderColor3 = Color3.fromRGB(158, 150, 222)
-    keyInputBox.Position = UDim2.new(0, 0, 0.200000003, 0)
-    keyInputBox.Size = UDim2.new(1.05381179, 0, 0.600000024, 0)
-    keyInputBox.ClearTextOnFocus = false
-    keyInputBox.Font = Enum.Font.Ubuntu
-    keyInputBox.PlaceholderColor3 = Color3.fromRGB(120, 120, 125)
-    keyInputBox.PlaceholderText = "Enter your key here..."
-    keyInputBox.Text = ""
-    keyInputBox.TextColor3 = Color3.fromRGB(190, 190, 195)
-    keyInputBox.TextSize = 12.000
-
-    local keyTextLabel = Instance.new("TextLabel")
-    keyTextLabel.Parent = keyTopLabels
-    keyTextLabel.BackgroundColor3 = Color3.fromRGB(31, 33, 41)
-    keyTextLabel.BackgroundTransparency = 1.000
-    keyTextLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
-    keyTextLabel.BorderSizePixel = 0
-    keyTextLabel.Position = UDim2.new(0.0270000007, 0, 0, 0)
-    keyTextLabel.Size = UDim2.new(0, 120, 0, 27)
-    keyTextLabel.Font = Enum.Font.Ubuntu
-    keyTextLabel.Text = "Katsura"
-    keyTextLabel.TextColor3 = Color3.fromRGB(190, 190, 195)
-    keyTextLabel.TextSize = 14.000
-    keyTextLabel.TextXAlignment = Enum.TextXAlignment.Left
-
-    -- No BackgroundLoadBar or LoadingLine in KeyLoadingGui
-
--- Removed duplicate/redefined local KatsuraLogo and related objects.
-
-
-local gameFrame = Instance.new("Frame")
-gameFrame.Name = "GameFrame"
-gameFrame.BackgroundColor3 = Color3.fromRGB(19, 22, 27)
-gameFrame.BackgroundTransparency = 0.25
-gameFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
-gameFrame.BorderSizePixel = 0
-gameFrame.ClipsDescendants = true
-gameFrame.Size = UDim2.fromOffset(344, 49)
-
-local imageLabel = Instance.new("ImageLabel")
-
-    imageLabel.Name = "ImageLabel"
-    imageLabel.Image = "rbxassetid://108227353249963"
-    imageLabel.ImageColor3 = Color3.fromRGB(255, 254, 253)
-    imageLabel.ImageTransparency = 0.6
-    imageLabel.ScaleType = Enum.ScaleType.Fit
-    imageLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    imageLabel.BackgroundTransparency = 1
-    imageLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
-    imageLabel.BorderSizePixel = 0
-    imageLabel.Position = UDim2.fromScale(0.0208, 0.06)
-    imageLabel.Size = UDim2.fromOffset(56, 64)
-
-local uICorner = Instance.new("UICorner")
-uICorner.Name = "UICorner"
-uICorner.Parent = imageLabel
-
-imageLabel.Parent = gameFrame
-
-local gameName = Instance.new("TextLabel")
-gameName.Name = "GameName"
-gameName.FontFace = Font.new(
-  "rbxasset://fonts/families/Ubuntu.json",
-  Enum.FontWeight.Bold,
-  Enum.FontStyle.Normal
-)
-gameName.RichText = true
-gameName.Text = "CS:2 External"
-gameName.TextColor3 = Color3.fromRGB(133, 127, 187)
-gameName.TextSize = 14
-gameName.TextTransparency = 0.6
-gameName.TextWrapped = true
-gameName.TextXAlignment = Enum.TextXAlignment.Left
-gameName.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-gameName.BackgroundTransparency = 1
-gameName.BorderColor3 = Color3.fromRGB(0, 0, 0)
-gameName.BorderSizePixel = 0
-gameName.Position = UDim2.fromScale(0.147, 0.0612)
-gameName.Size = UDim2.fromOffset(214, 25)
-gameName.Parent = gameFrame
-
-local updateStatus = Instance.new("TextLabel")
-updateStatus.Name = "UpdateStatus"
-updateStatus.FontFace = Font.new("rbxasset://fonts/families/Ubuntu.json")
-updateStatus.RichText = true
-updateStatus.Text = "Update June 11, 2025"
-updateStatus.TextColor3 = Color3.fromRGB(205, 206, 212)
-updateStatus.TextSize = 15
-updateStatus.TextTransparency = 0.6
-updateStatus.TextWrapped = true
-updateStatus.TextXAlignment = Enum.TextXAlignment.Left
-updateStatus.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-updateStatus.BackgroundTransparency = 1
-updateStatus.BorderColor3 = Color3.fromRGB(0, 0, 0)
-updateStatus.BorderSizePixel = 0
-updateStatus.Position = UDim2.fromScale(0.147, 0.571)
-updateStatus.Size = UDim2.fromOffset(214, 17)
-updateStatus.Parent = gameFrame
-
-local subTime = Instance.new("TextLabel")
-subTime.Name = "SubTime"
-subTime.FontFace = Font.new("rbxasset://fonts/families/SourceSansPro.json")
-subTime.Text = "183 Days"
-subTime.TextColor3 = Color3.fromRGB(205, 206, 212)
-subTime.TextSize = 14
-subTime.TextTransparency = 0.6
-subTime.BackgroundColor3 = Color3.fromRGB(42, 45, 56)
-subTime.BorderColor3 = Color3.fromRGB(0, 0, 0)
-subTime.BorderSizePixel = 0
-subTime.Position = UDim2.fromScale(0.801, 0.224)
-subTime.Size = UDim2.fromOffset(61, 25)
-subTime.Parent = gameFrame
-
-local LoaderHandler = {
-    Katsura = katsuraGui,
-    KatsuraLoading = nil, -- will be set later
-    GameFrame = gameFrame,
-    LoadButton = nil, -- will be set later
-    CloseButton = close,
-    FramesUrl = {}
-}
-local Katsura = {}
-getgenv().ActiveFrame = nil
-local activeTargets = nil
+-- Services
+local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
-local TweenService = game:GetService("TweenService")
 local Players = game:GetService("Players")
--- Removed unused LocalPlayer
-local TWEEN_TIME = 0.2
-if LoaderHandler.KatsuraLoading then LoaderHandler.KatsuraLoading.Enabled = false end
-if LoaderHandler.Katsura then LoaderHandler.Katsura.Enabled = false end
+local LocalPlayer = Players.LocalPlayer
 
-local EnterColor = {
-    GameFrame = {
-        BackgroundColor3 = "19, 22, 27", 
-        BackgroundTransparency = 0.25
-    },
-    SubTime = {
-        TextColor3 = "205, 206, 212",
-        BackgroundColor3 = "42, 45, 56",
-        BackgroundTransparency = 0,
-        TextTransparency = 0
-    },
-    UpdateStatus = {
-        TextColor3 = "205, 206, 212",
-        BackgroundColor3 = "255, 255, 255",
-        TextTransparency = 0
-    },
-    GameName = {
-        TextColor3 = "133, 127, 187",
-        BackgroundTransparency = 1,
-        TextTransparency = 0
-    },
-    Image = {
-        ImageTransparency = 0,
+-- Global Configuration & Constants
+if not getgenv().KatsuraUIConfig then
+    getgenv().KatsuraUIConfig = {
+        LibraryName = "Katsura Loader",
+        Theme = {
+            PrimaryBG = Color3.fromRGB(31, 33, 41),
+            SecondaryBG = Color3.fromRGB(25, 25, 30),
+            Accent = Color3.fromRGB(158, 150, 222),
+            Text = Color3.fromRGB(190, 190, 195),
+            Stroke = Color3.fromRGB(40, 40, 45),
+            IconTint = Color3.fromRGB(200, 50, 60)
+        },
+        Logos = {
+            KatsuraLogo = "rbxassetid://0", -- Placeholder
+            KatsuraLoadingLogo = "rbxassetid://0", -- Placeholder
+        }
     }
-}
-
-local LeaveColor = {
-    GameFrame = {
-        BackgroundColor3 = "23, 26, 31", 
-        BackgroundTransparency = 0.25
-    },
-    SubTime = {
-        TextColor3 = "190, 190, 190",
-        BackgroundTransparency = 0.6,
-        TextTransparency = 0.6
-    },
-    UpdateStatus = {
-        TextColor3 = "190, 190, 190",
-        BackgroundColor3 = "255, 255, 255",
-        BackgroundTransparency = 1,
-        TextTransparency = 0.6
-    },
-    GameName = {
-        TextColor3 = "190, 190, 190",
-        BackgroundTransparency = 1,
-        TextTransparency = 0.6
-    },
-    Image = {
-        ImageTransparency = 0.6,
-    }
-}
-
-
-
-function Katsura.parseColor(value)
-    if typeof(value) == "string" then
-        local r, g, b = string.match(value, "(%d+),%s*(%d+),%s*(%d+)")
-        if r and g and b then
-            return Color3.fromRGB(tonumber(r), tonumber(g), tonumber(b))
-        end
-    end
-    return value
-end
-function Katsura.applyStyle(styleTable, targets)
-    for name, props in pairs(styleTable) do
-        local instance = targets[name]
-        if instance then
-            local tweenInfo = TweenInfo.new(TWEEN_TIME, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-            local goal = {}
-
-            for property, value in pairs(props) do
-                goal[property] = Katsura.parseColor(value)
-            end
-
-            local tween = TweenService:Create(instance, tweenInfo, goal)
-            tween:Play()
-        end
-    end
-end
-function Katsura.ApplyHoverEffect(frame)
-    local targets = {
-        GameFrame = frame,
-        SubTime = frame:FindFirstChild("SubTime"),
-        UpdateStatus = frame:FindFirstChild("UpdateStatus"),
-        GameName = frame:FindFirstChild("GameName"),
-        Image = frame:FindFirstChildWhichIsA("ImageLabel")
-    }
-
-    if not targets.GameFrame then return end
-
-    frame.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            if getgenv().ActiveFrame and getgenv().ActiveFrame ~= frame then
-                Katsura.applyStyle(LeaveColor, activeTargets)
-            end
-            Katsura.applyStyle(EnterColor, targets)
-            getgenv().ActiveFrame = frame
-            activeTargets = targets
-        end
-    end)
-end
-function Katsura.ApplyHoverEffectToAny(guiObject, enterStyle, leaveStyle)
-    if not guiObject or not guiObject:IsA("GuiObject") then return end
-    local name = guiObject.Name
-    local targets = {
-        [name] = guiObject
-    }
-
-    guiObject.MouseEnter:Connect(function()
-           Katsura.applyStyle(enterStyle or EnterColor, targets)
-    end)
-
-    guiObject.MouseLeave:Connect(function()
-           Katsura.applyStyle(leaveStyle or LeaveColor, targets)
-    end)
-end
-function Katsura.CloseGuiEffect(screenGui)
-    if not screenGui or not screenGui:IsA("ScreenGui") then return end
-
-    -- Use global TweenService
-    local tweenInfo = TweenInfo.new(0.6, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut)
-    local lastTween = nil
-
-    for _, guiObject in ipairs(screenGui:GetDescendants()) do
-        if guiObject:IsA("GuiObject") then
-            local goal = {}
-
-            if guiObject:IsA("TextLabel") or guiObject:IsA("TextButton") or guiObject:IsA("TextBox") then
-                goal.TextTransparency = 1
-            end
-
-            if guiObject:IsA("ImageLabel") or guiObject:IsA("ImageButton") then
-                goal.ImageTransparency = 1
-            end
-
-            goal.BackgroundTransparency = 1
-
-            local tween = TweenService:Create(guiObject, tweenInfo, goal)
-            tween:Play()
-            lastTween = tween
-        elseif guiObject:IsA("UIStroke") then
-            local strokeTween = TweenService:Create(guiObject, tweenInfo, { Transparency = 1 })
-            strokeTween:Play()
-            lastTween = strokeTween
-        end
-    end
-
-    if lastTween then
-        lastTween.Completed:Once(function()
-            if screenGui then
-                screenGui:Destroy()
-            end
-        end)
-    else
-        screenGui:Destroy()
-    end
 end
 
-function Katsura.LoadingEffect(duration, player, frameConfigs, mainTemplate, gameFrameTemplate)
-    if not player or not player:IsA("Player") then return end
-    if not mainTemplate or not gameFrameTemplate then
-        warn("Missing main UI or GameFrame template")
-        return
-    end
+-- LPH Stubs (Obfuscation compatibility)
+if not LPH_OBFUSCATED then
+    LPH_JIT = function(...) return ... end
+    LPH_NO_VIRTUALIZE = function(...) return ... end
+end
 
-    local TweenService = game:GetService("TweenService")
-    local tweenInfo = TweenInfo.new(duration, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+-- Wait for Game Load
+if not game:IsLoaded() then game.Loaded:Wait() end
 
-    local loadingTemplate = LoaderHandler.KatsuraLoading
-    if not loadingTemplate then
-        loadingTemplate = Instance.new("ScreenGui")
-        loadingTemplate.Name = "KatsuraLoading"
-        LoaderHandler.KatsuraLoading = loadingTemplate
-    end
+--// ANIMATION UTILITIES //--
+local Anim = {}
 
-    local clonedLoadingUI = loadingTemplate:Clone()
-    clonedLoadingUI.Parent = player:WaitForChild("PlayerGui")
-    clonedLoadingUI.Enabled = true
-
-    local loadingWindow = clonedLoadingUI:FindFirstChild("LoadingWindow")
-    if not loadingWindow then
-        loadingWindow = loadingTemplate.Parent:FindFirstChild("LoadingWindow")
-        if loadingWindow then
-            local clonedLoadingWindow = loadingWindow:Clone()
-            clonedLoadingWindow.Parent = clonedLoadingUI
-            loadingWindow = clonedLoadingWindow
-        else
-            warn("LoadingWindow not found in template or parent")
-            return
-        end
-    end
-
-    -- Ensure loadingWindow is initialized before accessing its properties
-    if not loadingWindow then
-        loadingWindow = Instance.new("Frame")
-        loadingWindow.Name = "LoadingWindow"
-        loadingWindow.Parent = katsuraLoading
-        loadingWindow.AnchorPoint = Vector2.new(0.5, 0.5)
-        loadingWindow.BackgroundColor3 = Color3.fromRGB(31, 33, 41)
-        loadingWindow.BorderColor3 = Color3.fromRGB(0, 0, 0)
-        loadingWindow.BorderSizePixel = 0
-        loadingWindow.Position = UDim2.new(0.5, 0, 0.5, 0)
-        warn("loadingWindow was nil. Initialized a new LoadingWindow instance.")
-    end
-
-    loadingWindow.Size = UDim2.new(0, 250, 0, 133)
-
-    local backgroundFrame = loadingWindow:FindFirstChild("TopLabels") and loadingWindow.TopLabels:FindFirstChild("BackgroundLoadBar")
-    Katsura.MakeDraggable(loadingWindow)
-
-    local loadingLine = backgroundFrame and backgroundFrame:FindFirstChild("LoadingLine")
-    if not backgroundFrame or not loadingLine then return end
-
-    loadingLine.Size = UDim2.new(0, 0, 1, 0)
-    local tween = TweenService:Create(loadingLine, tweenInfo, {Size = UDim2.new(1, 0, 1, 0)})
+-- Helper to tween any property
+function Anim.Tween(obj, properties, time, style, direction)
+    if not obj then return end
+    local info = TweenInfo.new(
+        time or 0.3, 
+        style or Enum.EasingStyle.Quad, 
+        direction or Enum.EasingDirection.Out
+    )
+    local tween = TweenService:Create(obj, info, properties)
     tween:Play()
+    return tween
+end
 
-    tween.Completed:Once(function()
-        -- close initial loading UI
-        if Katsura.CloseGuiEffect then
-            Katsura.CloseGuiEffect(clonedLoadingUI)
-        else
-            clonedLoadingUI:Destroy()
+-- Pop-in / Slide-up Animation for opening GUIs
+function Anim.AnimateIn(frame)
+    if not frame then return end
+    
+    -- Set initial state (invisible and slightly lower)
+    local originalPos = frame.Position
+    local startPos = UDim2.new(originalPos.X.Scale, originalPos.X.Offset, originalPos.Y.Scale, originalPos.Y.Offset + 50)
+    
+    frame.Position = startPos
+    frame.BackgroundTransparency = 1
+    
+    -- Recursively hide all children initially
+    for _, child in pairs(frame:GetDescendants()) do
+        if child:IsA("GuiObject") then
+            if child:IsA("TextLabel") or child:IsA("TextButton") or child:IsA("TextBox") then
+                child.TextTransparency = 1
+            elseif child:IsA("ImageLabel") or child:IsA("ImageButton") then
+                child.ImageTransparency = 1
+            end
+            child.BackgroundTransparency = 1
         end
+    end
 
-        -- helper to create the main UI after key validation
-        local function showMainUI()
-            for _, gui in ipairs(player:WaitForChild("PlayerGui"):GetChildren()) do
-                if gui:IsA("ScreenGui") and gui.Name == mainTemplate.Name then
-                    gui:Destroy()
-                end
+    -- Animate Main Frame
+    Anim.Tween(frame, {Position = originalPos, BackgroundTransparency = KatsuraUIConfig.Theme.PrimaryBG == frame.BackgroundColor3 and 0 or 0.25}, 0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+
+    -- Animate Children (Fade in)
+    for _, child in pairs(frame:GetDescendants()) do
+        if child:IsA("GuiObject") then
+            local targetTextTrans = 0
+            local targetImgTrans = 0
+            local targetBgTrans = 0 -- You might need to adjust this per object type logic
+            
+            -- Simple logic to restore visibility. 
+            -- Note: In a complex UI, you'd store original transparencies. 
+            -- Here we assume 0 for text/image and specific values for BG.
+            
+            if child:IsA("TextLabel") or child:IsA("TextButton") or child:IsA("TextBox") then
+                 -- Check if it's one of the "faded" elements by default
+                 if child.Name == "Close" then targetTextTrans = 0.6 else targetTextTrans = 0 end
+                 Anim.Tween(child, {TextTransparency = targetTextTrans}, 0.4)
             end
-
-            local newUI = mainTemplate:Clone()
-            newUI.Parent = player:WaitForChild("PlayerGui")
-            newUI.Enabled = true
-
-            local gamesHolder = newUI.Main and newUI.Main.GamesHolder
-            if not gamesHolder then
-                warn("Missing GamesHolder")
-                return
+            
+            if child:IsA("ImageLabel") or child:IsA("ImageButton") then
+                Anim.Tween(child, {ImageTransparency = 0}, 0.4)
             end
-
-            Katsura.MakeDraggable(newUI.Main)
-            local Load = newUI.Main.LoadFrame.Load
-            local CloseBtn = newUI.Main.TopLabels.Close
-
-            Katsura.ApplyHoverEffectToAny(Load, {
-                Load = { TextColor3 = "205, 206, 212", TextTransparency = 0 }
-            }, {
-                Load = { TextColor3 = "190, 190, 190", TextTransparency = 0.6 }
-            })
-
-            -- Load Button Logic
-            Load.InputBegan:Connect(function(input)
-                if input.UserInputType ~= Enum.UserInputType.MouseButton1 then return end
-                local active = getgenv().ActiveFrame
-                if not active then return end
-                local frameCallback = LoaderHandler.FrameCallbacks 
-                    and LoaderHandler.FrameCallbacks[active]
-
-                if typeof(frameCallback) == "function" then
-                    frameCallback(active, newUI)
-                    return
-                end
-                local url = LoaderHandler.FramesUrl[active]
-                if url then
-                    Katsura.CloseGuiEffect(newUI)
-                    loadstring(game:HttpGet(url))()
-                end
-            end)
-
-            Katsura.ApplyHoverEffectToAny(CloseBtn, {
-                Close = { TextColor3 = "205, 206, 212", TextTransparency = 0 }
-            }, {
-                Close = { TextColor3 = "190, 190, 190", TextTransparency = 0.6 }
-            })
-
-            CloseBtn.InputBegan:Connect(function(input)
-                if input.UserInputType == Enum.UserInputType.MouseButton1 then
-                    Katsura.CloseGuiEffect(newUI)
-                end
-            end)
-
-            -- Create Frames
-            LoaderHandler.FramesUrl = LoaderHandler.FramesUrl or {}
-            LoaderHandler.FrameCallbacks = LoaderHandler.FrameCallbacks or {}
-
-            for i, config in ipairs(frameConfigs or {}) do
-                local frame = gameFrameTemplate:Clone()
-                frame.Name = "GameFrame_" .. i
-                frame.Parent = gamesHolder
-
-                Katsura.ApplyHoverEffect(frame)
-
-                if frame.GameName then
-                    frame.GameName.Text = config.GameName or ("Game " .. i)
-                end
-                if frame.ImageLabel then
-                    frame.ImageLabel.Image = config.Image or ""
-                end
-                if frame.SubTime then
-                    frame.SubTime.Text = config.SubTime or "Updated Recently"
-                end
-                if frame.UpdateStatus then
-                    frame.UpdateStatus.Text = config.Status or "Unknown"
-                end
-
-                if config.Url then
-                    LoaderHandler.FramesUrl[frame] = config.Url
-                end
-                if typeof(config.Callback) == "function" then
-                    LoaderHandler.FrameCallbacks[frame] = config.Callback
-                end
-                if config.Properties then
-                    for childName, props in pairs(config.Properties) do
-                        local child = frame:FindFirstChild(childName)
-                        if child then
-                            for prop, val in pairs(props) do
-                                pcall(function()
-                                    child[prop] = val
-                                end)
-                            end
-                        end
-                    end
-                end
+            
+            -- Restore BG based on object type logic (simplified)
+            if child.Name ~= "PurpleLine" and not child:IsA("TextLabel") then 
+                 Anim.Tween(child, {BackgroundTransparency = 0}, 0.4)
+            end
+            if child.Name == "PurpleLine" then
+                 Anim.Tween(child, {BackgroundTransparency = 0}, 0.4)
             end
         end
+    end
+end
 
-        -- Build key-entry UI (uses the style you provided)
-        local keyGui = Instance.new("ScreenGui")
-        keyGui.Name = "KeyLoadingGui"
-        keyGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-        keyGui.ResetOnSpawn = false
-        keyGui.Parent = player:WaitForChild("PlayerGui")
+-- Slide-down / Fade-out Animation for closing
+function Anim.AnimateOut(screenGui, callback)
+    if not screenGui then return end
+    
+    local frames = {}
+    if screenGui:FindFirstChild("Main") then table.insert(frames, screenGui.Main) end
+    if screenGui:FindFirstChild("LoadingWindow") then table.insert(frames, screenGui.LoadingWindow) end
+    if screenGui:FindFirstChild("KeyLoadingGui") then table.insert(frames, screenGui.KeyLoadingGui) end
+    
+    local completedCount = 0
+    local targetCount = #frames
+    
+    if targetCount == 0 then 
+        screenGui:Destroy()
+        if callback then callback() end
+        return 
+    end
 
-        local kw_LoadingWindow = Instance.new("Frame")
-        kw_LoadingWindow.Name = "LoadingWindow"
-        kw_LoadingWindow.Parent = keyGui
-        kw_LoadingWindow.AnchorPoint = Vector2.new(0.5, 0.5)
-        kw_LoadingWindow.BackgroundColor3 = Color3.fromRGB(31, 33, 41)
-        kw_LoadingWindow.BorderColor3 = Color3.fromRGB(0, 0, 0)
-        kw_LoadingWindow.BorderSizePixel = 0
-        kw_LoadingWindow.Position = UDim2.new(0.5, 0, 0.5, 0)
-        kw_LoadingWindow.Size = UDim2.new(0, 250, 0, 70)
-
-
-        local kw_TopLabels = Instance.new("Frame")
-        kw_TopLabels.Name = "TopLabels"
-        kw_TopLabels.Parent = kw_LoadingWindow
-        kw_TopLabels.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
-        kw_TopLabels.BorderColor3 = Color3.fromRGB(0, 0, 0)
-        kw_TopLabels.BorderSizePixel = 0
-        kw_TopLabels.Position = UDim2.new(0, 0, -0.0135716032, 0)
-        kw_TopLabels.Size = UDim2.new(0, 250, 0, 70)
-
-        local kw_Close = Instance.new("ImageLabel")
-        kw_Close.Name = "Close"
-        kw_Close.Parent = kw_TopLabels
-        kw_Close.AnchorPoint = Vector2.new(0.5, 0.5)
-        kw_Close.BackgroundColor3 = Color3.fromRGB(31, 33, 41)
-        kw_Close.BackgroundTransparency = 1.000
-        kw_Close.BorderColor3 = Color3.fromRGB(0, 0, 0)
-        kw_Close.BorderSizePixel = 0
-        kw_Close.Position = UDim2.new(0.879999995, 0, 0.222000003, 0)
-        kw_Close.Size = UDim2.new(0, 15, 0, 24)
-        kw_Close.Image = "rbxassetid://8445470984"
-        kw_Close.ImageColor3 = Color3.fromRGB(141, 141, 141)
-        kw_Close.ImageRectOffset = Vector2.new(304, 304)
-        kw_Close.ImageRectSize = Vector2.new(96, 96)
-        local kw_CloseAspect = Instance.new("UIAspectRatioConstraint")
-        kw_CloseAspect.Parent = kw_Close
-        kw_CloseAspect.DominantAxis = Enum.DominantAxis.Height
-
-        local KeyInputFrame = Instance.new("Frame")
-        KeyInputFrame.Name = "KeyInputFrame"
-        KeyInputFrame.Parent = kw_TopLabels
-        KeyInputFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
-        KeyInputFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
-        KeyInputFrame.BorderSizePixel = 0
-        KeyInputFrame.Position = UDim2.new(0.0270000007, 0, 0.400000006, 0)
-        KeyInputFrame.Size = UDim2.new(0, 223, 0, 30)
-
-        local KeyInputBox = Instance.new("TextBox")
-        KeyInputBox.Name = "KeyInputBox"
-        KeyInputBox.Parent = KeyInputFrame
-        KeyInputBox.BackgroundColor3 = Color3.fromRGB(31, 33, 41)
-        KeyInputBox.BorderColor3 = Color3.fromRGB(158, 150, 222)
-        KeyInputBox.Position = UDim2.new(0, 0, 0.200000003, 0)
-        KeyInputBox.Size = UDim2.new(1.05381179, 0, 0.600000024, 0)
-        KeyInputBox.ClearTextOnFocus = false
-        KeyInputBox.Font = Enum.Font.Ubuntu
-        KeyInputBox.PlaceholderColor3 = Color3.fromRGB(120, 120, 125)
-        KeyInputBox.PlaceholderText = "Enter your key here..."
-        KeyInputBox.Text = ""
-        KeyInputBox.TextColor3 = Color3.fromRGB(190, 190, 195)
-        KeyInputBox.TextSize = 12.000
-
-        local kw_TextLabel = Instance.new("TextLabel")
-        kw_TextLabel.Parent = kw_TopLabels
-        kw_TextLabel.BackgroundColor3 = Color3.fromRGB(31, 33, 41)
-        kw_TextLabel.BackgroundTransparency = 1.000
-        kw_TextLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
-        kw_TextLabel.BorderSizePixel = 0
-        kw_TextLabel.Position = UDim2.new(0.0270000007, 0, 0, 0)
-        kw_TextLabel.Size = UDim2.new(0, 120, 0, 27)
-        kw_TextLabel.Font = Enum.Font.Ubuntu
-        kw_TextLabel.Text = "Katsura"
-        kw_TextLabel.TextColor3 = Color3.fromRGB(190, 190, 195)
-        kw_TextLabel.TextSize = 14.000
-        kw_TextLabel.TextXAlignment = Enum.TextXAlignment.Left
-
-        -- No BackgroundLoadBar or loading bar in KeyLoadingGui
-
-        -- Key validation and interactions
-        local CORRECT_KEY = "KATSURA-2024-ACCESS-GRANTED"
-        local function showError()
-            KeyInputBox.BorderColor3 = Color3.fromRGB(255, 100, 100)
-            KeyInputBox.Text = ""
-            KeyInputBox.PlaceholderText = "Incorrect key! Try again."
-            KeyInputBox.PlaceholderColor3 = Color3.fromRGB(255, 150, 150)
-            task.wait(2)
-            KeyInputBox.BorderColor3 = Color3.fromRGB(158, 150, 222)
-            KeyInputBox.PlaceholderText = "Enter your key here..."
-            KeyInputBox.PlaceholderColor3 = Color3.fromRGB(120, 120, 125)
+    for _, frame in pairs(frames) do
+        -- Move down and fade out
+        local targetPos = UDim2.new(frame.Position.X.Scale, frame.Position.X.Offset, frame.Position.Y.Scale, frame.Position.Y.Offset + 50)
+        
+        Anim.Tween(frame, {Position = targetPos, BackgroundTransparency = 1}, 0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
+        
+        for _, child in pairs(frame:GetDescendants()) do
+            if child:IsA("GuiObject") then
+                local props = {BackgroundTransparency = 1}
+                if child:IsA("TextLabel") or child:IsA("TextButton") or child:IsA("TextBox") then
+                    props.TextTransparency = 1
+                end
+                if child:IsA("ImageLabel") or child:IsA("ImageButton") then
+                    props.ImageTransparency = 1
+                end
+                if child:IsA("UIStroke") then
+                    props.Transparency = 1
+                end
+                Anim.Tween(child, props, 0.3)
+            end
         end
-
-        local function showSuccess()
-            KeyInputBox.BorderColor3 = Color3.fromRGB(100, 255, 100)
-            KeyInputBox.Text = "Access Granted!"
-            KeyInputBox.TextColor3 = Color3.fromRGB(100, 255, 100)
-            task.wait(0.6)
-            keyGui:Destroy()
-            showMainUI()
-        end
-
-        local function isKeyCorrect(inputKey)
-            return inputKey == CORRECT_KEY
-        end
-
-        -- no loading bar animation here; user enters key directly
-
-        keyInputBox.FocusLost:Connect(function(enterPressed)
-            if not enterPressed then return end
-            local inputKey = keyInputBox.Text
-            if isKeyCorrect(inputKey) then
-                showSuccess()
-            else
-                showError()
+        
+        -- Cleanup after tween
+        task.delay(0.4, function()
+            completedCount = completedCount + 1
+            if completedCount >= targetCount then
+                screenGui:Destroy()
+                if callback then callback() end
             end
         end)
+    end
+end
 
-        -- close button
-        keyClose.InputBegan:Connect(function(input)
-            if input.UserInputType == Enum.UserInputType.MouseButton1 then
-                keyGui:Destroy()
-            end
-        end)
-
+-- Button Click "Press" Animation
+function Anim.AddPressEffect(button)
+    if not button then return end
+    
+    button.MouseButton1Down:Connect(function()
+        Anim.Tween(button, {Size = UDim2.new(button.Size.X.Scale, button.Size.X.Offset * 0.95, button.Size.Y.Scale, button.Size.Y.Offset * 0.95)}, 0.1)
+    end)
+    
+    button.MouseButton1Up:Connect(function()
+        Anim.Tween(button, {Size = UDim2.new(button.Size.X.Scale, button.Size.X.Offset / 0.95, button.Size.Y.Scale, button.Size.Y.Offset / 0.95)}, 0.1, Enum.EasingStyle.Spring)
+    end)
+    
+    button.MouseLeave:Connect(function()
+         -- Reset size if mouse leaves while holding
+         -- (This requires storing original size to be perfectly accurate, but for small buttons this visual reset is usually fine)
     end)
 end
+
+--// MAIN LIBRARY LOGIC //--
+
+local Katsura = {}
+local LoaderHandler = { FramesUrl = {}, FrameCallbacks = {} }
+
+--// UI CREATION HELPERS //--
+-- (Simplified creation to keep script clean, using the structure you provided)
+
+local function CreateMainUI()
+    local sg = Instance.new("ScreenGui")
+    sg.Name = "Katsura"
+    sg.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+    local main = Instance.new("Frame")
+    main.Name = "Main"
+    main.BackgroundColor3 = KatsuraUIConfig.Theme.PrimaryBG
+    main.Position = UDim2.fromScale(0.5, 0.5)
+    main.Size = UDim2.fromOffset(358, 297)
+    main.AnchorPoint = Vector2.new(0.5, 0.5)
+    main.Parent = sg
+
+    local top = Instance.new("Frame")
+    top.Name = "TopLabels"
+    top.BackgroundColor3 = KatsuraUIConfig.Theme.SecondaryBG
+    top.Size = UDim2.fromOffset(358, 34)
+    top.Parent = main
+
+    local line = Instance.new("Frame")
+    line.Name = "PurpleLine"
+    line.BackgroundColor3 = KatsuraUIConfig.Theme.Accent
+    line.Position = UDim2.new(0,0,1, -2)
+    line.Size = UDim2.new(1,0,0,2)
+    line.BorderSizePixel = 0
+    line.Parent = top
+
+    local title = Instance.new("TextLabel")
+    title.Text = KatsuraUIConfig.LibraryName
+    title.Font = Enum.Font.Ubuntu
+    title.TextSize = 14
+    title.TextColor3 = KatsuraUIConfig.Theme.Text
+    title.BackgroundTransparency = 1
+    title.Position = UDim2.new(0, 10, 0, 0)
+    title.Size = UDim2.new(0, 100, 1, 0)
+    title.TextXAlignment = Enum.TextXAlignment.Left
+    title.Parent = top
+
+    local close = Instance.new("TextButton")
+    close.Name = "Close"
+    close.Text = "X"
+    close.Font = Enum.Font.Ubuntu
+    close.TextSize = 14
+    close.TextColor3 = KatsuraUIConfig.Theme.Text
+    close.BackgroundTransparency = 1
+    close.Position = UDim2.new(1, -30, 0, 0)
+    close.Size = UDim2.new(0, 30, 1, 0)
+    close.Parent = top
+    
+    Anim.AddPressEffect(close) -- Add Animation
+
+    local loadFrame = Instance.new("Frame")
+    loadFrame.Name = "LoadFrame"
+    loadFrame.BackgroundTransparency = 1
+    loadFrame.Position = UDim2.new(0, 10, 1, -40)
+    loadFrame.Size = UDim2.new(1, -20, 0, 30)
+    loadFrame.Parent = main
+    
+    local loadBtn = Instance.new("TextButton")
+    loadBtn.Name = "Load"
+    loadBtn.Text = "LOAD"
+    loadBtn.BackgroundColor3 = KatsuraUIConfig.Theme.Accent
+    loadBtn.TextColor3 = Color3.new(1,1,1)
+    loadBtn.Font = Enum.Font.Ubuntu
+    loadBtn.TextSize = 14
+    loadBtn.Size = UDim2.new(1, 0, 1, 0)
+    loadBtn.Parent = loadFrame
+    
+    local uic = Instance.new("UICorner")
+    uic.CornerRadius = UDim.new(0, 4)
+    uic.Parent = loadBtn
+    
+    Anim.AddPressEffect(loadBtn) -- Add Animation
+
+    local gamesHolder = Instance.new("ScrollingFrame")
+    gamesHolder.Name = "GamesHolder"
+    gamesHolder.BackgroundTransparency = 1
+    gamesHolder.Position = UDim2.new(0, 0, 0, 40)
+    gamesHolder.Size = UDim2.new(1, 0, 1, -90)
+    gamesHolder.ScrollBarThickness = 2
+    gamesHolder.Parent = main
+    
+    -- Layout
+    local uiList = Instance.new("UIListLayout")
+    uiList.Padding = UDim.new(0, 5)
+    uiList.HorizontalAlignment = Enum.HorizontalAlignment.Center
+    uiList.Parent = gamesHolder
+
+    return sg
+end
+
+local function CreateGameFrameTemplate()
+    local frame = Instance.new("Frame")
+    frame.Name = "GameFrame"
+    frame.BackgroundColor3 = KatsuraUIConfig.Theme.SecondaryBG
+    frame.BackgroundTransparency = 0.25
+    frame.Size = UDim2.new(0.95, 0, 0, 50)
+    
+    local corner = Instance.new("UICorner")
+    corner.Parent = frame
+
+    local name = Instance.new("TextLabel")
+    name.Name = "GameName"
+    name.Text = "Game Name"
+    name.Font = Enum.Font.Ubuntu
+    name.TextSize = 14
+    name.TextColor3 = KatsuraUIConfig.Theme.Text
+    name.BackgroundTransparency = 1
+    name.Position = UDim2.new(0, 60, 0, 5)
+    name.Size = UDim2.new(0, 200, 0, 20)
+    name.TextXAlignment = Enum.TextXAlignment.Left
+    name.Parent = frame
+    
+    local status = Instance.new("TextLabel")
+    status.Name = "UpdateStatus"
+    status.Text = "Status"
+    status.Font = Enum.Font.Ubuntu
+    status.TextSize = 12
+    status.TextColor3 = Color3.fromRGB(150,150,150)
+    status.BackgroundTransparency = 1
+    status.Position = UDim2.new(0, 60, 0, 25)
+    status.Size = UDim2.new(0, 200, 0, 15)
+    status.TextXAlignment = Enum.TextXAlignment.Left
+    status.Parent = frame
+
+    return frame
+end
+
+--// KATSURA FUNCTIONS //--
 
 function Katsura.MakeDraggable(guiObject)
-    if not guiObject or not guiObject:IsA("GuiObject") then return end
+    local dragging, dragInput, dragStart, startPos
 
-    local dragging = false
-    local startMousePos = nil
-    local startGuiPos = nil
+    local function update(input)
+        local delta = input.Position - dragStart
+        -- Use Tween for smooth drag (optional, but requested animations)
+        local targetPos = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+        Anim.Tween(guiObject, {Position = targetPos}, 0.05) -- Very fast tween for smooth follow
+    end
 
     guiObject.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
             dragging = true
-            startMousePos = UserInputService:GetMouseLocation()
-            startGuiPos = guiObject.AbsolutePosition
+            dragStart = input.Position
+            startPos = guiObject.Position
 
             input.Changed:Connect(function()
                 if input.UserInputState == Enum.UserInputState.End then
@@ -859,68 +338,189 @@ function Katsura.MakeDraggable(guiObject)
         end
     end)
 
-    RunService.RenderStepped:Connect(function()
-        if not dragging then return end
+    guiObject.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+            dragInput = input
+        end
+    end)
 
-        local mousePos = UserInputService:GetMouseLocation()
-        local delta = mousePos - startMousePos
-        local newTopLeft = startGuiPos + delta
-
-        local camera = workspace.CurrentCamera
-        local screenSize = camera and camera.ViewportSize or Vector2.new(1920, 1080)
-        local size = guiObject.AbsoluteSize
-        local anchor = guiObject.AnchorPoint
-
-        -- Clamp top-left so the GUI stays onscreen
-        newTopLeft = Vector2.new(
-            math.clamp(newTopLeft.X, 0, math.max(0, screenSize.X - size.X)),
-            math.clamp(newTopLeft.Y, 0, math.max(0, screenSize.Y - size.Y))
-        )
-
-        -- Position property expects the anchored position, so add anchor*size
-        local positionAbsolute = newTopLeft + Vector2.new(anchor.X * size.X, anchor.Y * size.Y)
-        guiObject.Position = UDim2.fromOffset(math.floor(positionAbsolute.X + 0.5), math.floor(positionAbsolute.Y + 0.5))
+    UserInputService.InputChanged:Connect(function(input)
+        if input == dragInput and dragging then
+            update(input)
+        end
     end)
 end
 
--- Add tweening to KeyLoadingGui elements for smoother transitions
-local function tweenElement(element, properties, duration)
-    if not element or not properties then return end
-    local tweenInfo = TweenInfo.new(duration or 0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-    local tween = TweenService:Create(element, tweenInfo, properties)
-    tween:Play()
+function Katsura.ApplyHoverEffect(gameFrame)
+    local targets = {
+        GameFrame = gameFrame,
+        GameName = gameFrame:FindFirstChild("GameName"),
+        UpdateStatus = gameFrame:FindFirstChild("UpdateStatus")
+    }
+    
+    -- Styles
+    local EnterColor = {
+        GameFrame = {BackgroundColor3 = KatsuraUIConfig.Theme.PrimaryBG, BackgroundTransparency = 0},
+        GameName = {TextColor3 = KatsuraUIConfig.Theme.Accent},
+    }
+    local LeaveColor = {
+        GameFrame = {BackgroundColor3 = KatsuraUIConfig.Theme.SecondaryBG, BackgroundTransparency = 0.25},
+        GameName = {TextColor3 = KatsuraUIConfig.Theme.Text},
+    }
+
+    gameFrame.MouseEnter:Connect(function()
+        for objName, props in pairs(EnterColor) do
+            if targets[objName] then Anim.Tween(targets[objName], props, 0.3) end
+        end
+    end)
+    
+    gameFrame.MouseLeave:Connect(function()
+        if getgenv().ActiveFrame ~= gameFrame then
+            for objName, props in pairs(LeaveColor) do
+                 if targets[objName] then Anim.Tween(targets[objName], props, 0.3) end
+            end
+        end
+    end)
+    
+    gameFrame.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            -- Reset previous
+            if getgenv().ActiveFrame and getgenv().ActiveFrame ~= gameFrame then
+                 local oldTargets = {
+                    GameFrame = getgenv().ActiveFrame,
+                    GameName = getgenv().ActiveFrame:FindFirstChild("GameName")
+                 }
+                 for objName, props in pairs(LeaveColor) do
+                     if oldTargets[objName] then Anim.Tween(oldTargets[objName], props, 0.3) end
+                 end
+            end
+            
+            -- Set Active
+            getgenv().ActiveFrame = gameFrame
+            
+            -- Click Animation (Bounce)
+            local originalSize = gameFrame.Size
+            local shrink = UDim2.new(originalSize.X.Scale * 0.98, 0, originalSize.Y.Scale * 0.98, 0)
+            Anim.Tween(gameFrame, {Size = shrink}, 0.1).Completed:Connect(function()
+                Anim.Tween(gameFrame, {Size = originalSize}, 0.1, Enum.EasingStyle.Spring)
+            end)
+        end
+    end)
 end
 
--- Example: Tweening the KeyInputBox when it gains focus
--- These should be inside the function that creates the key GUI, using the correct variable names.
+function Katsura.LoadingEffect(duration, player, frameConfigs)
+    local mainTemplate = CreateMainUI()
+    local gameFrameTemplate = CreateGameFrameTemplate()
 
--- Add debugging logs to trace Katsura loader initialization
-print("Initializing Katsura loader...")
+    -- 1. Create Key UI
+    local keyGui = Instance.new("ScreenGui")
+    keyGui.Name = "KeyLoadingGui"
+    keyGui.Parent = player:WaitForChild("PlayerGui")
+    
+    local keyWindow = Instance.new("Frame")
+    keyWindow.Name = "LoadingWindow"
+    keyWindow.Size = UDim2.fromOffset(300, 100)
+    keyWindow.Position = UDim2.fromScale(0.5, 0.5)
+    keyWindow.AnchorPoint = Vector2.new(0.5, 0.5)
+    keyWindow.BackgroundColor3 = KatsuraUIConfig.Theme.PrimaryBG
+    keyWindow.BorderSizePixel = 0
+    keyWindow.Parent = keyGui
+    
+    local keyBox = Instance.new("TextBox")
+    keyBox.Size = UDim2.new(0.8, 0, 0, 30)
+    keyBox.Position = UDim2.new(0.1, 0, 0.4, 0)
+    keyBox.PlaceholderText = "Enter Key..."
+    keyBox.BackgroundColor3 = KatsuraUIConfig.Theme.SecondaryBG
+    keyBox.TextColor3 = KatsuraUIConfig.Theme.Text
+    keyBox.Font = Enum.Font.Ubuntu
+    keyBox.TextSize = 14
+    keyBox.Parent = keyWindow
+    
+    local corner = Instance.new("UICorner")
+    corner.Parent = keyBox
+    local corner2 = Instance.new("UICorner")
+    corner2.Parent = keyWindow
 
-if not LoaderHandler.KatsuraLoading then
-    warn("LoaderHandler.KatsuraLoading is nil.")
+    Katsura.MakeDraggable(keyWindow)
+    
+    -- Animate Key Window IN
+    Anim.AnimateIn(keyWindow)
+
+    -- Logic
+    keyBox.FocusLost:Connect(function(enter)
+        if enter then
+            if keyBox.Text == "KATSURA-2024-ACCESS-GRANTED" then
+                -- Success Animation
+                Anim.Tween(keyBox, {BackgroundColor3 = Color3.fromRGB(100, 255, 100), TextColor3 = Color3.new(0,0,0)}, 0.3)
+                keyBox.Text = "Access Granted"
+                task.wait(0.5)
+                
+                -- Close Key UI smoothly
+                Anim.AnimateOut(keyGui, function()
+                    -- Open Main UI
+                    local newUI = mainTemplate:Clone()
+                    newUI.Parent = player.PlayerGui
+                    
+                    local mainFrame = newUI.Main
+                    Katsura.MakeDraggable(mainFrame)
+                    
+                    -- Close Button Logic
+                    local closeBtn = mainFrame.TopLabels.Close
+                    closeBtn.MouseButton1Click:Connect(function()
+                        Anim.AnimateOut(newUI)
+                    end)
+                    
+                    -- Populate Games
+                    local holder = mainFrame.GamesHolder
+                    for i, config in ipairs(frameConfigs or {}) do
+                        local gf = gameFrameTemplate:Clone()
+                        gf.GameName.Text = config.GameName
+                        gf.UpdateStatus.Text = config.Status
+                        gf.Parent = holder
+                        
+                        -- Store Data
+                        if config.Url then LoaderHandler.FramesUrl[gf] = config.Url end
+                        
+                        Katsura.ApplyHoverEffect(gf)
+                    end
+                    
+                    -- Load Button Logic
+                    local loadBtn = mainFrame.LoadFrame.Load
+                    loadBtn.MouseButton1Click:Connect(function()
+                         local active = getgenv().ActiveFrame
+                         if active and LoaderHandler.FramesUrl[active] then
+                             Anim.AnimateOut(newUI)
+                             -- Executing script
+                             loadstring(game:HttpGet(LoaderHandler.FramesUrl[active]))()
+                         end
+                    end)
+
+                    -- Animate Main Window IN
+                    Anim.AnimateIn(mainFrame)
+                end)
+            else
+                -- Error Animation (Shake or Red)
+                Anim.Tween(keyBox, {BackgroundColor3 = Color3.fromRGB(255, 100, 100)}, 0.2)
+                task.wait(0.2)
+                Anim.Tween(keyBox, {BackgroundColor3 = KatsuraUIConfig.Theme.SecondaryBG}, 0.5)
+            end
+        end
+    end)
 end
-if not LoaderHandler.Katsura then
-    warn("LoaderHandler.Katsura is nil.")
-end
 
-    warn("LoaderHandler.GameFrame is nil.")
-if not LoaderHandler.LoadButton then
-    warn("LoaderHandler.LoadButton is nil.")
-end
+--// EXAMPLE CONFIG //--
+local Games = {
+    {
+        GameName = "CS:2 External",
+        Status = "Undetected | Updated",
+        Url = "https://raw.githubusercontent.com/..." -- your url
+    },
+    {
+        GameName = "Arsenal Aimbot",
+        Status = "Patched",
+        Url = ""
+    }
+}
 
-if not LoaderHandler.CloseButton then
-    warn("LoaderHandler.CloseButton is nil.")
-end
-
-if not LoaderHandler.GameFrame then
-    warn("LoaderHandler.GameFrame is nil.")
-end
-
-if not Katsura or type(Katsura.LoadingEffect) ~= "function" then
-    warn("Katsura object is invalid or missing LoadingEffect function.")
-else
-    print("Katsura loader initialized successfully.")
-end
-
-return Katsura, LoaderHandler.Katsura, LoaderHandler.GameFrame
+--// START //--
+Katsura.LoadingEffect(1, LocalPlayer, Games)
