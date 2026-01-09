@@ -813,6 +813,8 @@ function Katsura.LoadingEffect(duration, player, frameConfigs, mainTemplate, gam
         end
         -- Tween in the purple border color for KeyInputBox
         if KeyInputBox then
+            -- Temporarily set background visible so border is visible
+            KeyInputBox.BackgroundTransparency = 0
             local borderTween = TweenService:Create(KeyInputBox, fadeInTweenInfo, {
                 BorderColor3 = Color3.fromRGB(158, 150, 222)
             })
