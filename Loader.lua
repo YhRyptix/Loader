@@ -267,15 +267,6 @@ uIStroke.Parent = loadFrame
     kw_TextLabel.TextSize = 14.000
     kw_TextLabel.TextXAlignment = Enum.TextXAlignment.Left
 
-    -- No BackgroundLoadBar or LoadingLine in KeyLoadingGui
-local loadingWindow = Instance.new("Frame")
-loadingWindow.Name = "LoadingWindow"
-loadingWindow.Size = UDim2.new(0, 250, 0, 133)
-loadingWindow.BackgroundColor3 = Color3.fromRGB(31, 33, 41)
-loadingWindow.BorderColor3 = Color3.fromRGB(0, 0, 0)
-loadingWindow.BorderSizePixel = 0
-loadingWindow.AnchorPoint = Vector2.new(0.5, 0.5)
-loadingWindow.Position = UDim2.new(0.5, 0, 0.5, 0)
 
 local KatsuraLogo = Instance.new("ImageLabel")
 KatsuraLogo.Name = "KatsuraLogo"
