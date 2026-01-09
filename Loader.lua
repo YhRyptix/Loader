@@ -267,6 +267,8 @@ uIStroke.Parent = loadFrame
     kw_TextLabel.TextSize = 14.000
     kw_TextLabel.TextXAlignment = Enum.TextXAlignment.Left
 
+    -- No BackgroundLoadBar or LoadingLine in KeyLoadingGui
+loadingWindow.Size = UDim2.new(0, 250, 0, 133)
 
 local KatsuraLogo = Instance.new("ImageLabel")
 KatsuraLogo.Name = "KatsuraLogo"
@@ -798,7 +800,6 @@ function Katsura.LoadingEffect(duration, player, frameConfigs, mainTemplate, gam
         kw_LoadingWindow.Size = UDim2.new(0, 250, 0, 70)
 
 
-        -- Key GUI: TopLabels (no BackgroundLoadBar or LoadingLine)
         local kw_TopLabels = Instance.new("Frame")
         kw_TopLabels.Name = "TopLabels"
         kw_TopLabels.Parent = kw_LoadingWindow
@@ -826,14 +827,6 @@ function Katsura.LoadingEffect(duration, player, frameConfigs, mainTemplate, gam
         kw_CloseAspect.Parent = kw_Close
         kw_CloseAspect.DominantAxis = Enum.DominantAxis.Height
 
-        -- Tween Close button hover
-        kw_Close.MouseEnter:Connect(function()
-            TweenService:Create(kw_Close, TweenInfo.new(0.18, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {ImageColor3 = Color3.fromRGB(205, 206, 212) }):Play()
-        end)
-        kw_Close.MouseLeave:Connect(function()
-            TweenService:Create(kw_Close, TweenInfo.new(0.18, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {ImageColor3 = Color3.fromRGB(141, 141, 141) }):Play()
-        end)
-
         local KeyInputFrame = Instance.new("Frame")
         KeyInputFrame.Name = "KeyInputFrame"
         KeyInputFrame.Parent = kw_TopLabels
@@ -857,8 +850,6 @@ function Katsura.LoadingEffect(duration, player, frameConfigs, mainTemplate, gam
         KeyInputBox.Text = ""
         KeyInputBox.TextColor3 = Color3.fromRGB(190, 190, 195)
         KeyInputBox.TextSize = 12.000
-        KeyInputBox.TextTransparency = 1
-        KeyInputBox.BackgroundTransparency = 1
 
         local kw_TextLabel = Instance.new("TextLabel")
         kw_TextLabel.Parent = kw_TopLabels
@@ -873,72 +864,27 @@ function Katsura.LoadingEffect(duration, player, frameConfigs, mainTemplate, gam
         kw_TextLabel.TextColor3 = Color3.fromRGB(190, 190, 195)
         kw_TextLabel.TextSize = 14.000
         kw_TextLabel.TextXAlignment = Enum.TextXAlignment.Left
-        kw_TextLabel.TextTransparency = 1
 
-        -- Fade-in tween for all elements
-        local fadeInTime = 0.28
-        local fadeProps = {
-            [KeyInputBox] = {TextTransparency = 0, BackgroundTransparency = 0},
-            [kw_TextLabel] = {TextTransparency = 0},
-            [KeyInputFrame] = {BackgroundTransparency = 0},
-            [kw_TopLabels] = {BackgroundTransparency = 0},
-            [kw_Close] = {ImageTransparency = 0},
-            [kw_LoadingWindow] = {BackgroundTransparency = 0}
-        }
-        for inst, props in pairs(fadeProps) do
-            for prop, val in pairs(props) do
-                inst[prop] = (prop:find("Transparency") and 1) or inst[prop]
-            end
-        end
-        task.defer(function()
-            for inst, props in pairs(fadeProps) do
-                if inst then
-                    TweenService:Create(inst, TweenInfo.new(fadeInTime, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), props):Play()
-                end
-            end
-        end)
-
-        -- No BackgroundLoadBar or LoadingLine in KeyLoadingGui
+        -- No BackgroundLoadBar or loading bar in KeyLoadingGui
 
         -- Key validation and interactions
-
         local CORRECT_KEY = "KATSURA-2024-ACCESS-GRANTED"
         local function showError()
-            TweenService:Create(KeyInputBox, TweenInfo.new(0.18, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-                BorderColor3 = Color3.fromRGB(255, 100, 100)
-            }):Play()
+            KeyInputBox.BorderColor3 = Color3.fromRGB(255, 100, 100)
             KeyInputBox.Text = ""
             KeyInputBox.PlaceholderText = "Incorrect key! Try again."
             KeyInputBox.PlaceholderColor3 = Color3.fromRGB(255, 150, 150)
             task.wait(2)
-            TweenService:Create(KeyInputBox, TweenInfo.new(0.18, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-                BorderColor3 = Color3.fromRGB(158, 150, 222)
-            }):Play()
+            KeyInputBox.BorderColor3 = Color3.fromRGB(158, 150, 222)
             KeyInputBox.PlaceholderText = "Enter your key here..."
             KeyInputBox.PlaceholderColor3 = Color3.fromRGB(120, 120, 125)
         end
 
         local function showSuccess()
-            TweenService:Create(KeyInputBox, TweenInfo.new(0.18, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-                BorderColor3 = Color3.fromRGB(100, 255, 100),
-                TextColor3 = Color3.fromRGB(100, 255, 100)
-            }):Play()
+            KeyInputBox.BorderColor3 = Color3.fromRGB(100, 255, 100)
             KeyInputBox.Text = "Access Granted!"
+            KeyInputBox.TextColor3 = Color3.fromRGB(100, 255, 100)
             task.wait(0.6)
-            -- Fade out all elements before destroying
-            local fadeOutTime = 0.22
-            local fadeOutProps = {
-                [KeyInputBox] = {TextTransparency = 1, BackgroundTransparency = 1},
-                [kw_TextLabel] = {TextTransparency = 1},
-                [KeyInputFrame] = {BackgroundTransparency = 1},
-                [kw_TopLabels] = {BackgroundTransparency = 1},
-                [kw_Close] = {ImageTransparency = 1},
-                [kw_LoadingWindow] = {BackgroundTransparency = 1}
-            }
-            for inst, props in pairs(fadeOutProps) do
-                TweenService:Create(inst, TweenInfo.new(fadeOutTime, Enum.EasingStyle.Quad, Enum.EasingDirection.In), props):Play()
-            end
-            task.wait(fadeOutTime)
             keyGui:Destroy()
             showMainUI()
         end
@@ -959,22 +905,9 @@ function Katsura.LoadingEffect(duration, player, frameConfigs, mainTemplate, gam
             end
         end)
 
-        -- close button with fade-out
+        -- close button
         kw_Close.InputBegan:Connect(function(input)
             if input.UserInputType == Enum.UserInputType.MouseButton1 then
-                local fadeOutTime = 0.22
-                local fadeOutProps = {
-                    [KeyInputBox] = {TextTransparency = 1, BackgroundTransparency = 1},
-                    [kw_TextLabel] = {TextTransparency = 1},
-                    [KeyInputFrame] = {BackgroundTransparency = 1},
-                    [kw_TopLabels] = {BackgroundTransparency = 1},
-                    [kw_Close] = {ImageTransparency = 1},
-                    [kw_LoadingWindow] = {BackgroundTransparency = 1}
-                }
-                for inst, props in pairs(fadeOutProps) do
-                    TweenService:Create(inst, TweenInfo.new(fadeOutTime, Enum.EasingStyle.Quad, Enum.EasingDirection.In), props):Play()
-                end
-                task.wait(fadeOutTime)
                 keyGui:Destroy()
             end
         end)
@@ -1026,4 +959,44 @@ function Katsura.MakeDraggable(guiObject)
         guiObject.Position = UDim2.fromOffset(math.floor(positionAbsolute.X + 0.5), math.floor(positionAbsolute.Y + 0.5))
     end)
 end
+
+-- Add tweening to KeyLoadingGui elements for smoother transitions
+local TweenService = game:GetService("TweenService")
+
+local function tweenElement(element, properties, duration)
+    if not element or not properties then return end
+    local tweenInfo = TweenInfo.new(duration or 0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+    local tween = TweenService:Create(element, tweenInfo, properties)
+    tween:Play()
+end
+
+-- Example: Tweening the KeyInputBox when it gains focus
+KeyInputBox.Focused:Connect(function()
+    tweenElement(KeyInputBox, {BorderColor3 = Color3.fromRGB(100, 255, 100)}, 0.3)
+end)
+
+KeyInputBox.FocusLost:Connect(function(enterPressed)
+    if not enterPressed then
+        tweenElement(KeyInputBox, {BorderColor3 = Color3.fromRGB(158, 150, 222)}, 0.3)
+    end
+end)
+
+-- Tweening the Close button hover effect
+kw_Close.MouseEnter:Connect(function()
+    tweenElement(kw_Close, {ImageColor3 = Color3.fromRGB(205, 205, 205)}, 0.3)
+end)
+
+kw_Close.MouseLeave:Connect(function()
+    tweenElement(kw_Close, {ImageColor3 = Color3.fromRGB(141, 141, 141)}, 0.3)
+end)
+
+-- Tweening the KeyInputFrame appearance
+KeyInputFrame.MouseEnter:Connect(function()
+    tweenElement(KeyInputFrame, {BackgroundColor3 = Color3.fromRGB(35, 35, 40)}, 0.3)
+end)
+
+KeyInputFrame.MouseLeave:Connect(function()
+    tweenElement(KeyInputFrame, {BackgroundColor3 = Color3.fromRGB(25, 25, 30)}, 0.3)
+end)
+
 return Katsura,LoaderHandler.Katsura, LoaderHandler.GameFrame
