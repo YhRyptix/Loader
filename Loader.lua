@@ -999,4 +999,29 @@ KeyInputFrame.MouseLeave:Connect(function()
     tweenElement(KeyInputFrame, {BackgroundColor3 = Color3.fromRGB(25, 25, 30)}, 0.3)
 end)
 
+-- Add debugging logs to trace Katsura loader initialization
+print("Initializing Katsura loader...")
+
+if not LoaderHandler.KatsuraLoading then
+    warn("LoaderHandler.KatsuraLoading is nil.")
+end
+if not LoaderHandler.Katsura then
+    warn("LoaderHandler.Katsura is nil.")
+end
+if not LoaderHandler.GameFrame then
+    warn("LoaderHandler.GameFrame is nil.")
+end
+if not LoaderHandler.LoadButton then
+    warn("LoaderHandler.LoadButton is nil.")
+end
+if not LoaderHandler.CloseButton then
+    warn("LoaderHandler.CloseButton is nil.")
+end
+
+if not Katsura or type(Katsura.LoadingEffect) ~= "function" then
+    warn("Katsura object is invalid or missing LoadingEffect function.")
+else
+    print("Katsura loader initialized successfully.")
+end
+
 return Katsura,LoaderHandler.Katsura, LoaderHandler.GameFrame
