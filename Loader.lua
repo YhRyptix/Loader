@@ -819,6 +819,8 @@ function Katsura.LoadingEffect(duration, player, frameConfigs, mainTemplate, gam
         kw_Close.Size = UDim2.new(0, 15, 0, 24)
         kw_Close.Image = "rbxassetid://8445470984"
         kw_Close.ImageColor3 = Color3.fromRGB(141, 141, 141)
+        kw_Close.ImageRectOffset = Vector2.new(304, 304)
+        kw_Close.ImageRectSize = Vector2.new(96, 96)
         local kw_CloseAspect = Instance.new("UIAspectRatioConstraint")
         kw_CloseAspect.Parent = kw_Close
         kw_CloseAspect.DominantAxis = Enum.DominantAxis.Height
