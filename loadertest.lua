@@ -675,12 +675,13 @@ function Katsura.LoadingEffect(duration, player, frameConfigs, mainTemplate, gam
         local fadeGoals = {}
         for _, guiObject in ipairs(clonedLoadingUI:GetDescendants()) do
             if guiObject:IsA("GuiObject") then
-                fadeGoals[guiObject] = {BackgroundTransparency = 1}
+                -- Only set BackgroundTransparency for non-TextLabel/TextButton/TextBox
                 if guiObject:IsA("TextLabel") or guiObject:IsA("TextButton") or guiObject:IsA("TextBox") then
-                    fadeGoals[guiObject].TextTransparency = 1
-                end
-                if guiObject:IsA("ImageLabel") or guiObject:IsA("ImageButton") then
-                    fadeGoals[guiObject].ImageTransparency = 1
+                    fadeGoals[guiObject] = {TextTransparency = 1, BackgroundTransparency = 1}
+                elseif guiObject:IsA("ImageLabel") or guiObject:IsA("ImageButton") then
+                    fadeGoals[guiObject] = {ImageTransparency = 1, BackgroundTransparency = 1}
+                else
+                    fadeGoals[guiObject] = {BackgroundTransparency = 1}
                 end
             elseif guiObject:IsA("UIStroke") then
                 fadeGoals[guiObject] = {Transparency = 1}
@@ -796,8 +797,11 @@ function Katsura.LoadingEffect(duration, player, frameConfigs, mainTemplate, gam
                 local props = {}
                 if obj:IsA("TextLabel") or obj:IsA("TextButton") or obj:IsA("TextBox") then
                     props.TextTransparency = 0
-                end
-                if obj:IsA("GuiObject") then
+                    props.BackgroundTransparency = 1 -- Always keep text backgrounds transparent
+                elseif obj:IsA("ImageLabel") or obj:IsA("ImageButton") then
+                    props.ImageTransparency = 0
+                    props.BackgroundTransparency = 1
+                else
                     props.BackgroundTransparency = 0
                 end
                 local t = TweenService:Create(obj, fadeInTweenInfo, props)
