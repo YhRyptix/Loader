@@ -894,7 +894,9 @@ function Katsura.LoadingEffect(duration, player, frameConfigs, mainTemplate, gam
         end
         task.defer(function()
             for inst, props in pairs(fadeProps) do
-                TweenService:Create(inst, TweenInfo.new(fadeInTime, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), props):Play()
+                if inst then
+                    TweenService:Create(inst, TweenInfo.new(fadeInTime, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), props):Play()
+                end
             end
         end)
 
